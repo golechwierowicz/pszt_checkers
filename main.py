@@ -96,9 +96,16 @@ class Game:
                 d = self.data[r][c]
                 if type(d) == Checker:
                     if d.color == 0:
-                        print(col.BLUE + 'W ' + col.ENDC, end='')
+                        if d.type == 0:
+                            # is queen
+                            print(col.BLUE + 'W ' + col.ENDC, end='')
+                        else:
+                            print(col.BLUE + 'Q ' + col.ENDC, end='')
                     elif d.color == 1:
-                        print(col.ORANGE + 'B ' + col.ENDC, end='')
+                        if d.type == 0:
+                            print(col.ORANGE + 'B ' + col.ENDC, end='')
+                        else:
+                            print(col.ORANGE + 'Q ' + col.ENDC, end='')
                     else:
                         raise 'unknown color'
                 else:
@@ -121,26 +128,52 @@ class Game:
             ret = []
             actualBeaten = []
             startingPos = Point(r, c)
+            checkerType = data[r][c].type
 
+            # just an recursive DFS
             def dfs(p):
                 foundAnyPossibleBeating = False
                 for delta in (Point(a, b) for a in [-1, 1] for b in [-1, 1]):
-                    beatenPos = p + delta
-                    afterPos = p + delta * 2
-                    if (not insideBoard(beatenPos)) or (not insideBoard(afterPos)):
-                        continue
-                    if beatenPos in actualBeaten:
-                        # already beaten checker in this path
-                        continue
-                    d1 = data[beatenPos.r][beatenPos.c]
-                    d2 = data[afterPos.r][afterPos.c]
-                    if d1 == None or d2 != None or d1.color == self.currentPlayer:
-                        continue
+                    afterPoses = []
+                    if checkerType == 0:
+                        # normal checker
+                        beatenPos = p + delta
+                        afterPoses = [p + delta * 2]
+                    else:
+                        # queen
+                        beatenPos = p + delta
+                        found = False
+                        while(insideBoard(beatenPos)):
+                            d = data[beatenPos.r][beatenPos.c]
+                            if d != None and d.color != self.currentPlayer:
+                                found = True
+                                break
+                            beatenPos += delta
+                        if found:
+                            afterPos = beatenPos + delta
+                            while(insideBoard(afterPos)):
+                                d = data[afterPos.r][afterPos.c]
+                                if d != None:
+                                    break
+                                afterPoses.append(afterPos)
+                                afterPos += delta
 
-                    # can beat
-                    actualBeaten.append(beatenPos)
-                    foundAnyPossibleBeating = True
-                    dfs(afterPos)
+                    for afterPos in afterPoses:
+                        if (not insideBoard(beatenPos)) or (not insideBoard(afterPos)):
+                            continue
+                        if beatenPos in actualBeaten:
+                            # already beaten checker in this path
+                            continue
+                        d1 = data[beatenPos.r][beatenPos.c]
+                        d2 = data[afterPos.r][afterPos.c]
+                        if d1 == None or d2 != None or d1.color == self.currentPlayer:
+                            continue
+
+                        # can beat
+                        actualBeaten.append(beatenPos)
+                        foundAnyPossibleBeating = True
+                        dfs(afterPos)
+
                 if not foundAnyPossibleBeating and len(actualBeaten) > 0:
                     ret.append(Move(startingPos, p, actualBeaten.copy()))
                     actualBeaten.pop()
@@ -148,7 +181,6 @@ class Game:
             dfs(startingPos)
             return ret
 
-        # TODO: implement queen beating
         ret = []
         for r in range(EDGE_SIZE):
             for c in range(EDGE_SIZE):
@@ -174,7 +206,7 @@ class Game:
                     p2 = (r - 1, c - 1)
                     if insideBoard(p2) and empty(p2):
                         ret.append(Move(p1, p2, ()))
-        if len(ret)==0:
+        if len(ret) == 0:
             return ret
         maxLen = max(len(r.removedCheckers) for r in ret)
         print('maximal beating:', maxLen)
@@ -199,7 +231,15 @@ class Game:
     # check if any checker reached end of the board
     # and evolve it into queen if it's true
     def evolveCheckers(self):
-        pass
+        data = self.data
+        for c in range(EDGE_SIZE):
+            d = data[0][c]
+            if d != None and d.color == 1:
+                data[0][c] = Checker(d.color, 1)
+
+            d = data[EDGE_SIZE - 1][c]
+            if d != None and d.color == 0:
+                data[EDGE_SIZE - 1][c] = Checker(d.color, 1)
 
     def nextMove(self):
         possibleMoves = self.getPossibleMoves()
