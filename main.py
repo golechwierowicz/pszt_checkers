@@ -190,22 +190,26 @@ class Game:
                 if d.color != self.currentPlayer:
                     continue
                 ret += findBeatingPaths(r, c)
-                # TODO: refactor this below with use of Point
-                p1 = (r, c)
-                if d.color == 0:
-                    p2 = (r + 1, c + 1)
-                    if insideBoard(p2) and empty(p2):
-                        ret.append(Move(p1, p2, ()))
-                    p2 = (r + 1, c - 1)
-                    if insideBoard(p2) and empty(p2):
-                        ret.append(Move(p1, p2, ()))
+                p1 = Point(r, c)
+                if d.type == 0:
+                    if d.color == 0:
+                        directions = (Point(1, 1), Point(1, -1))
+                    else:
+                        directions = (Point(-1, 1), Point(-1, -1))
                 else:
-                    p2 = (r - 1, c + 1)
-                    if insideBoard(p2) and empty(p2):
-                        ret.append(Move(p1, p2, ()))
-                    p2 = (r - 1, c - 1)
-                    if insideBoard(p2) and empty(p2):
-                        ret.append(Move(p1, p2, ()))
+                    directions = (Point(a, b)
+                                  for a in (-1, 1) for b in (-1, 1))
+                for di in directions:
+                    if d.type == 0:
+                        p2 = p1 + di
+                        if empty(p2):
+                            ret.append(Move(p1, p2, ()))
+                    else:
+                        p2 = p1 + di
+                        while empty(p2):
+                            ret.append(Move(p1, p2, ()))
+                            p2 += di
+
         if len(ret) == 0:
             return ret
         maxLen = max(len(r.removedCheckers) for r in ret)
