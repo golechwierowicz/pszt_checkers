@@ -11,6 +11,7 @@ HOW_MANY_ROWS_OF_CHECKERS = 3  # must be smaller than EDGE_SIZE/2
 class Controller:
 
     def decideNextMove(self, board, possibleMoves):
+        raise 'Controller is abstract'
         pass
 
 
@@ -73,7 +74,6 @@ class Game:
                 self.data[r1][c] = Checker(1, 0)
 
     def printBoard(self):
-        # TODO: make it look nice-, add colors itp.
         class col:
             PURPLE = '\033[95m'
             BLUE = '\033[94m'
@@ -260,12 +260,12 @@ class Game:
         self.evolveCheckers()
 
     def finished(self):
-        # TODO: return if any of players has won
+        # TODO: implement draw (for example if game leasts too long)
+        # or AI will not be wise enough?
         return len(self.getPossibleMoves()) == 0
 
     def getWinner(self):
-        # TODO: implement
-        return 'not implemented'  # 0 or 1 or 2
+        return not self.currentPlayer
 
 
 def playGame(ai1, ai2):
@@ -283,4 +283,4 @@ if __name__ == '__main__':
     ai1 = AIRandom()
     ai2 = AIRandom()
     w = playGame(ai1, ai2)
-    print("winner is:", w)
+    print("winner is:", 'B' if w else 'W')
