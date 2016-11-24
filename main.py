@@ -2,6 +2,7 @@
 from controller import AIRandom
 from rules import Game
 
+
 def playGame(ai1, ai2):
     g = Game(ai1, ai2)
     g.printBoard()

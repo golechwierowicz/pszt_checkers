@@ -12,11 +12,15 @@ Checker = namedtuple('Checker', [
 Move = namedtuple('Move', [
     'p1', 'p2', 'removedCheckers',
 ])
+Move.__str__ = lambda x: (str(x.p1) + ' -> ' + str(x.p2) + (('\n  removed: ' +
+                                                             ','.join(map(str, x.removedCheckers))) if len(x.removedCheckers) > 0 else ''))
 Point = namedtuple('Point', [
     'r', 'c',
 ])
+Point.__str__ = lambda x: '(' + str(x.r) + ',' + str(x.c) + ')'
 Point.__add__ = lambda p1, p2: Point(p1.r + p2.r, p1.c + p2.c)
 Point.__mul__ = lambda p, k: Point(p.r * k, p.c * k)
+
 
 class Game:
 
@@ -76,10 +80,10 @@ class Game:
                     print('. ', end='')
             print()
 
-        pm=self.getPossibleMoves()
+        print('current player:', 'W' if self.currentPlayer == 0 else 'B')
+        pm = self.getPossibleMoves()
         print('possible Moves:', len(self.getPossibleMoves()))
         print('\n'.join(map(str, pm)))
-        print('current player:', 'W' if self.currentPlayer == 0 else 'B')
 
     def getPossibleMoves(self):
         data = self.data
