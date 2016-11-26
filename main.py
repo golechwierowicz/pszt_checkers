@@ -4,13 +4,21 @@ from controllerSimpleEvolution1 import AISimpleEvolution1
 from rules import Game
 from display import DisplayHelper
 from queue import *
+import argparse
+
+
+def parseArguments():
+    parser = argparse.ArgumentParser(
+        description='Checkers visualisation')
+    parser.add_argument('-i', '--input', help='Input AI data for playting vs random choices',
+                        dest='inputFile', required=True)
+    return parser.parse_args()
 
 
 def playGame(ai1, ai2):
     q = Queue()
     window = DisplayHelper(q)
     window.run()
-
 
     g = Game(ai1, ai2)
     g.printBoard()
@@ -22,10 +30,11 @@ def playGame(ai1, ai2):
     return g.getWinner()
 
 if __name__ == '__main__':
-    # TODO: evolution strategy itp.
-    print("Checkers AI for PSZT..")
+    args = parseArguments()
     ai1 = AIRandom()
+
     ai2 = AISimpleEvolution1()
-    ai2.deserialize('test.ai')
-    w = playGame(ai1, ai2)
-    print("winner is:", 'B' if w else 'W')
+    ai2.deserialize(args.inputFile)
+
+    w = playGame(ai2, ai1)
+    print("winner is:", 'Random' if w else 'Evolved')

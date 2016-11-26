@@ -1,22 +1,20 @@
 #!/bin/bash
-name="main.py"
-autopep8 $name > $name.changed
-mv $name.changed $name
-chmod +x $name
 
-name="controller.py"
-autopep8 $name > $name.changed
-mv $name.changed $name
+function doLibrary {
+    autopep8 $1 > $1.changed
+    mv $1.changed $1
+}
 
-name="rules.py"
-autopep8 $name > $name.changed
-mv $name.changed $name
+function doExecutable {
+    doLibrary $1
+    chmod +x $1
+}
 
-name="scenarioEvolution1.py"
-autopep8 $name > $name.changed
-mv $name.changed $name
-chmod +x $name
+doExecutable main.py
+doExecutable scenarioEvolution1.py
+doExecutable compareEvolution1.py
 
-name="controllerSimpleEvolution1.py"
-autopep8 $name > $name.changed
-mv $name.changed $name
+doLibrary controller.py
+doLibrary controllerSimpleEvolution1.py
+doLibrary rules.py
+# currently display.py is excluded

@@ -3,6 +3,7 @@
 from controllerSimpleEvolution1 import AISimpleEvolution1
 from controller import AIRandom
 from rules import Game
+import argparse
 import sys
 
 #-------------------------------------------------------------\
@@ -19,40 +20,59 @@ def playGame(ai1, ai2):
         # g.printBoard()
     return g.getWinner()
 
-# check how good is given ai against random choices
 
-
-def checkScore(ai):
+def checkScore(ai, args):
+    # check how good is given ai against random choices
+    samples = args.m
     winCounter = [0, 0]
     ai2 = AIRandom()
-    for a in range(20):
+    for a in range(samples // 2):
         w = playGame(ai, ai2)
         winCounter[w] += 1
     # and now second player moves first
-    for a in range(20):
+    for a in range(samples // 2):
         w = playGame(ai2, ai)
         winCounter[not w] += 1
-    if winCounter[1]==0:
+    if winCounter[1] == 0:
         # always win
-        return 40
-    return winCounter[0] / winCounter[1]
+        return samples
+    return winCounter[0] / samples
+
+
+def parseArguments():
+    parser = argparse.ArgumentParser(
+        description='Teaching scenario for AISimpleEvolution1.')
+    parser.add_argument('-o', '--output', help='Output file for AI data',
+                        dest='outputFile', required=True)
+    parser.add_argument('-n', '--number-of-iterations', help='Number of iterations of learning',
+                        dest='n', default=1000, type=int)
+    parser.add_argument('-m', '--number-of-samples', help='Number of games for 1 learning iteration',
+                        dest='m', default=128, type=int)
+    parser.add_argument('-i', '--input', help='AI data used for the beggining if learning',
+                        dest='inputFile', default=None)
+    return parser.parse_args()
 
 if __name__ == '__main__':
+
+    args = parseArguments()
+
     # TODO: implement proper 1+1 algorithm
 
-    # this is AI we will evolwe
+    # this is AI we will evolve
     ai = AISimpleEvolution1()
+    if args.inputFile != None:
+        ai.deserialize(args.inputFile)
 
     # assume that always loses
     bestScore = 0.0
 
     # try teaching in iterations
-    for a in range(1200):
+    for a in range(args.n):
         potentialBetterAi = ai.copy()
         potentialBetterAi.mutate()
-        s = checkScore(potentialBetterAi)
+        s = checkScore(potentialBetterAi, args)
 
-        if s > bestScore:
+        if s >= bestScore:
             # mutation was worth
             print('\nsuccess with score: ', s)
             ai = potentialBetterAi
@@ -62,20 +82,8 @@ if __name__ == '__main__':
             print('.', end='')
             sys.stdout.flush()
 
-    # save ai data
-    ai.serialize('test.ai')
+        if s == 100.0:
+            break
 
-    print('\nis this ai really good now?')
-    print('checking with more games...')
-    winCounter = [0, 0]
-    ai2 = AIRandom()
-    for a in range(2000):
-        w = playGame(ai, ai2)
-        winCounter[w] += 1
-    for a in range(2000):
-        w = playGame(ai2, ai)
-        winCounter[not w] += 1
-    if winCounter[1]==0:
-        print("PERFECT !")
-    else:
-        print('result: ', winCounter[0] / winCounter[1])
+    # save ai data
+    ai.serialize(args.outputFile)

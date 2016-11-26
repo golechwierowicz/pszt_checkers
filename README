@@ -1,2 +1,6 @@
-To generate good ai run scenarioEvolution1.py
-To see results run main.py
+List of executable files:
+    main.py - visualisation
+    scenarioEvolution1.py - learning simple evolution ai
+    compareEvolution1.py - compare simple evolution ai with random choices
+
+for details see help (-h, --help) for each of them

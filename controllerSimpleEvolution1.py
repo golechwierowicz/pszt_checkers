@@ -19,6 +19,8 @@ class AISimpleEvolution1(Controller):
         ret = 0
         for r in range(EDGE_SIZE):
             for c in range(EDGE_SIZE):
+                if (r + c) % 2 != 0:
+                    continue
                 d = data[r][c]
                 if d == None:
                     ret += self.coefs[r][c][2]
@@ -28,7 +30,7 @@ class AISimpleEvolution1(Controller):
 
     def decideNextMove(self, board, possibleMoves):
         ret = None
-        curMax = -1000*1000
+        curMax = -1000 * 1000
         for pm in possibleMoves:
             d = board.getAppliedData(pm)
             sc = self.calcScore(d)
@@ -39,18 +41,22 @@ class AISimpleEvolution1(Controller):
 
     def copy(self):
         newone = type(self)()
-        #newone.__dict__.update(self.__dict__)
+        # newone.__dict__.update(self.__dict__)
         newone.coefs = copy.deepcopy(self.coefs)
         return newone
 
     def mutate(self):
         for r in range(EDGE_SIZE):
             for c in range(EDGE_SIZE):
+                if (r + c) % 2 != 0:
+                    continue
+                if(random.random() < 0.6):
+                    continue
                 for col in range(3):
-                    self.coefs[r][c][col] += (0.6 - random.random())
+                    self.coefs[r][c][col] += 6 * (0.55 - random.random())
 
     def serialize(self, filename):
-        open(filename,'w').write(str(self.coefs))
+        open(filename, 'w').write(str(self.coefs))
 
     def deserialize(self, filename):
-        self.coefs=eval(open(filename,'r').read())
+        self.coefs = eval(open(filename, 'r').read())
