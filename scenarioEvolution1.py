@@ -13,26 +13,35 @@ import sys
 
 def playGame(ai1, ai2):
     g = Game(ai1, ai2)
-    # g.printBoard()
     while not g.finished():
-        # input()  # to see anything for now
         g.nextMove()
-        # g.printBoard()
-    return g.getWinner()
+    return g
 
 
 def checkScore(ai, args):
     # check how good is given ai against random choices
     samples = args.m
-    winCounter = [0, 0]
+    winCounter = [0.0, 0.0]
     ai2 = AIRandom()
-    for a in range(samples // 2):
-        w = playGame(ai, ai2)
-        winCounter[w] += 1
-    # and now second player moves first
-    for a in range(samples // 2):
-        w = playGame(ai2, ai)
-        winCounter[not w] += 1
+
+    for playAs in range(2):
+        for a in range(samples // 2):
+            if playAs == 0:
+                # play as first player
+                w = playGame(ai, ai2)
+            else:
+                w = playGame(ai2, ai)
+
+            if w.getWinner() == playAs:
+                winCounter[0] += 1
+                if args.scoreCheckersCount:
+                    # normal checkers
+                    winCounter[0] += 0.05 * w.getCheckersCount()[playAs][0]
+                    # queens
+                    winCounter[0] += 0.15 * w.getCheckersCount()[playAs][1]
+            else:
+                winCounter[1] += 1
+
     if winCounter[1] == 0:
         # always win
         return samples
@@ -50,6 +59,9 @@ def parseArguments():
                         dest='m', default=128, type=int)
     parser.add_argument('-i', '--input', help='AI data used for the beggining if learning',
                         dest='inputFile', default=None)
+    parser.add_argument('-e', '--experimental-score',
+                        help='While calculating score, add remaining checkers count with coeficient',
+                        dest='scoreCheckersCount', action='store_true', default=False)
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -81,9 +93,6 @@ if __name__ == '__main__':
             # mutation was not worth
             print('.', end='')
             sys.stdout.flush()
-
-        if s == 100.0:
-            break
 
     # save ai data
     ai.serialize(args.outputFile)

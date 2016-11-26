@@ -50,8 +50,6 @@ class Game:
         return self.data
 
     def printBoard(self):
-        print(self.data)
-
         class col:
             PURPLE = '\033[95m'
             BLUE = '\033[94m'
@@ -95,6 +93,15 @@ class Game:
         pm = self.getPossibleMoves()
         print('possible Moves:', len(self.getPossibleMoves()))
         print('\n'.join(map(str, pm)))
+
+    def getCheckersCount(self):
+        ret = [[0, 0], [0, 0]]
+        for r in range(EDGE_SIZE):
+            for c in range(EDGE_SIZE):
+                d = self.data[r][c]
+                if d != None:
+                    ret[d.color][d.type] += 1
+        return ret
 
     def getPossibleMoves(self):
         data = self.data

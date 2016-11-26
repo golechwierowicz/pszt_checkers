@@ -29,6 +29,8 @@ class AISimpleEvolution1(Controller):
         return ret
 
     def decideNextMove(self, board, possibleMoves):
+        if len(possibleMoves) == 1:
+            return possibleMoves[0]
         ret = None
         curMax = -1000 * 1000
         for pm in possibleMoves:
