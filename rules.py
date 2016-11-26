@@ -19,7 +19,7 @@ Point = namedtuple('Point', [
 ])
 Point.__str__ = lambda x: '(' + str(x.r) + ',' + str(x.c) + ')'
 Point.__add__ = lambda p1, p2: Point(p1.r + p2.r, p1.c + p2.c)
-Point.__mul__ = lambda p, k: Point(p.r * k, p.c * k)
+Point.__mul__ = lambda p, k :Point(p.r * k, p.c * k)
 
 
 class Game:
@@ -46,7 +46,11 @@ class Game:
         newone.data = [d.copy() for d in self.data]
         return newone
 
+    def getBoard(self):
+        return self.data
+
     def printBoard(self):
+        print(self.data)
         class col:
             PURPLE = '\033[95m'
             BLUE = '\033[94m'

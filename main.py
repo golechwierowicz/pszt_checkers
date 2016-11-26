@@ -2,12 +2,20 @@
 from controller import AIRandom
 from controllerSimpleEvolution1 import AISimpleEvolution1
 from rules import Game
+from display import DisplayHelper
+from queue import *
 
 
 def playGame(ai1, ai2):
+    q = Queue()
+    window = DisplayHelper(q)
+    window.run()
+
+
     g = Game(ai1, ai2)
     g.printBoard()
     while not g.finished():
+        q.put(g.getBoard())
         input()  # to see anything for now
         g.nextMove()
         g.printBoard()
