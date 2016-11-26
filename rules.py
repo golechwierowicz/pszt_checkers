@@ -40,6 +40,12 @@ class Game:
                 r1 = EDGE_SIZE - 1 - r
                 self.data[r1][c] = Checker(1, 0)
 
+    def copyDataOnly(self):
+        newone = type(self)(None, None)
+        # newone.__dict__.update(self.__dict__)
+        newone.data = [d.copy() for d in self.data]
+        return newone
+
     def printBoard(self):
         class col:
             PURPLE = '\033[95m'
@@ -198,6 +204,11 @@ class Game:
         assert data[p2[0]][p2[1]] == None
         data[p2[0]][p2[1]] = data[p1[0]][p1[1]]
         data[p1[0]][p1[1]] = None
+
+    def getAppliedData(self, move):
+        ret = self.copyDataOnly()
+        ret.applyMove(move)
+        return ret.data
 
     # check if any checker reached end of the board
     # and evolve it into queen if it's true
