@@ -32,6 +32,8 @@ class Game:
         self.data = [[None for a in range(EDGE_SIZE)]
                      for b in range(EDGE_SIZE)]
 
+        self.roundCounter = 0
+
         # place starting checkers
         for r in range(HOW_MANY_ROWS_OF_CHECKERS):
             for c in range(r % 2, EDGE_SIZE, 2):
@@ -49,7 +51,7 @@ class Game:
     def getBoard(self):
         return self.data
 
-    def printBoard(self):
+    def printBoard(self, clear=True):
         class col:
             PURPLE = '\033[95m'
             BLUE = '\033[94m'
@@ -59,7 +61,8 @@ class Game:
             ENDC = '\033[0m'
             BOLD = '\033[1m'
             UNDERLINE = '\033[4m'
-        os.system('clear')
+        if clear:
+            os.system('clear')
         print('   ', end='')
         print(col.PURPLE, end='')
         print(' '.join(map(str, range(EDGE_SIZE))))
@@ -121,7 +124,6 @@ class Game:
 
             # just an recursive DFS
             def dfs(p):
-                foundAnyPossibleBeating = False
                 for delta in (Point(a, b) for a in [-1, 1] for b in [-1, 1]):
                     afterPoses = []
                     if checkerType == 0:
@@ -160,13 +162,12 @@ class Game:
 
                         # can beat
                         actualBeaten.append(beatenPos)
-                        foundAnyPossibleBeating = True
                         dfs(afterPos)
+                        if len(actualBeaten) > 0:
+                            ret.append(
+                                Move(startingPos, afterPos, actualBeaten.copy()))
+                        actualBeaten.pop()
 
-                if not foundAnyPossibleBeating and len(actualBeaten) > 0:
-                    ret.append(Move(startingPos, p, actualBeaten.copy()))
-                    actualBeaten.pop()
-                    pass
             dfs(startingPos)
             return ret
 
@@ -248,6 +249,10 @@ class Game:
         assert nextMove in possibleMoves
         self.applyMove(nextMove)
         self.evolveCheckers()
+        self.roundCounter += 1
+        if self.roundCounter == 5000:
+            print("Detected infinite game!")
+            self.printBoard()
 
     def finished(self):
         # TODO: implement draw (for example if game leasts too long)
