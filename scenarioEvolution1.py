@@ -5,6 +5,7 @@ from controller import AIRandom
 from rules import Game
 import argparse
 import sys
+import random
 
 #-------------------------------------------------------------\
 # in this scenario 1+1 algorithm is used to teach evolving ai |
@@ -22,6 +23,7 @@ def checkScore(ai, args):
     # check how good is given ai against random choices
     samples = args.m
     winCounter = [0.0, 0.0]
+    additionalPoints = 0.0
     ai2 = AIRandom()
 
     for playAs in range(2):
@@ -36,16 +38,15 @@ def checkScore(ai, args):
                 winCounter[0] += 1
                 if args.scoreCheckersCount:
                     # normal checkers
-                    winCounter[0] += 0.05 * w.getCheckersCount()[playAs][0]
+                    additionalPoints += 0.05 * w.getCheckersCount()[playAs][0]
                     # queens
-                    winCounter[0] += 0.15 * w.getCheckersCount()[playAs][1]
+                    additionalPoints += 0.15 * w.getCheckersCount()[playAs][1]
             else:
                 winCounter[1] += 1
-
-    if winCounter[1] == 0:
-        # always win
-        return samples
-    return winCounter[0] / samples
+    if args.scoreCheckersCount:
+        return (winCounter[0] + additionalPoints) / samples, winCounter[0] / samples
+    else:
+        return winCounter[0] / samples
 
 
 def parseArguments():
@@ -62,6 +63,9 @@ def parseArguments():
     parser.add_argument('-e', '--experimental-score',
                         help='While calculating score, add remaining checkers count with coeficient',
                         dest='scoreCheckersCount', action='store_true', default=False)
+    parser.add_argument('-d', '--determined-cases',
+                        help='Mutations and random AI behavior are determined',
+                        dest='determinedCases', action='store_true', default=False)
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -76,23 +80,31 @@ if __name__ == '__main__':
         ai.deserialize(args.inputFile)
 
     # assume that always loses
-    bestScore = 0.0
+    bestScore = checkScore(ai, args)
 
     # try teaching in iterations
-    for a in range(args.n):
-        potentialBetterAi = ai.copy()
-        potentialBetterAi.mutate()
-        s = checkScore(potentialBetterAi, args)
+    try:
+        for a in range(args.n):
+            potentialBetterAi = ai.copy()
+            if args.determinedCases:
+                random.seed(a)
+            potentialBetterAi.mutate()
+            if args.determinedCases:
+                random.seed(0)
+            s = checkScore(potentialBetterAi, args)
 
-        if s >= bestScore:
-            # mutation was worth
-            print('\nsuccess with score: ', s)
-            ai = potentialBetterAi
-            bestScore = s
-        else:
-            # mutation was not worth
-            print('.', end='')
-            sys.stdout.flush()
+            if s >= bestScore:
+                # mutation was worth
+                print('\nsuccess with score: ', s)
+                ai = potentialBetterAi
+                bestScore = s
+            else:
+                # mutation was not worth
+                print('.', end='')
+                sys.stdout.flush()
+    except KeyboardInterrupt:
+        print('KeyboardInterrup catched')
 
     # save ai data
+    print('Saving data to file')
     ai.serialize(args.outputFile)
