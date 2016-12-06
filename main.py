@@ -17,8 +17,8 @@ def parseArguments():
 
 def playGame(ai1, ai2):
     q = Queue()
-    window = DisplayHelper(q)
-    window.run()
+#   window = DisplayHelper(q)
+#   window.run()
 
     g = Game(ai1, ai2)
     g.printBoard()

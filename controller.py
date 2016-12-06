@@ -1,6 +1,5 @@
 import random
 
-
 class Controller:
 
     def decideNextMove(self, board, possibleMoves):

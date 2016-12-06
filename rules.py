@@ -44,7 +44,7 @@ class Game:
         newone = type(self)(None, None)
         # newone.__dict__.update(self.__dict__)
         newone.data = [d.copy() for d in self.data]
-        return newone
+       return newone
 
     def getBoard(self):
         return self.data
@@ -112,7 +112,7 @@ class Game:
             startingPos = Point(r, c)
             checkerType = data[r][c].type
 
-            # just an recursive DFS
+            # just a recursive DFS
             def dfs(p):
                 foundAnyPossibleBeating = False
                 for delta in (Point(a, b) for a in [-1, 1] for b in [-1, 1]):
