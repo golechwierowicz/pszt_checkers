@@ -7,8 +7,10 @@ class MiniMax(Controller):
 
     def __init__(self):
         self.DEPTH = 3
+        self.player = None
 
     def decideNextMove(self, board, possibleMoves):
+        self.player = board.currentPlayer
         best_move = self.maxi(board, self.DEPTH)[1] # get best move, other elem of tuple is score
         return best_move
 
@@ -44,11 +46,11 @@ class MiniMax(Controller):
         black_players = 0
         for row in board:
             for p in row:
-                if(p != None and p.type == 0):
+                if(p != None and p.color == 0):
                     white_players += 1
-                elif(p != None and p.type == 1):
+                elif(p != None and p.color == 1):
                     black_players += 1
-        we = game.currentPlayer
+        we = self.player
         if(we == 0):
             return white_players - black_players
         elif(we == 1):

@@ -32,11 +32,10 @@ def playGame(ai1, ai2):
 
 if __name__ == '__main__':
     args = parseArguments()
-    ai1 = AIRandom()
 
-#    ai2 = AISimpleEvolution1()
-    ai2 = MiniMax()
-#    ai2.deserialize(args.inputFile)
+    ai1 = MiniMax()
+    ai2 = AISimpleEvolution1()
+    ai2.deserialize(args.inputFile)
 
     w = playGame(ai2, ai1)
-    print("winner is:", 'Random' if w else 'Evolved')
+    print("winner is:", 'Minimax' if w else 'Evolved')
