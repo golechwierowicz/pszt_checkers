@@ -43,9 +43,10 @@ class Game:
                 self.data[r1][c] = Checker(1, 0)
 
     def copyDataOnly(self):
+        # don't copy controllers
         newone = type(self)(None, None)
-        # newone.__dict__.update(self.__dict__)
         newone.data = [d.copy() for d in self.data]
+        newone.currentPlayer = self.currentPlayer
         return newone
 
     def getBoard(self):

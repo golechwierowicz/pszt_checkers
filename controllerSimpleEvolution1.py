@@ -24,11 +24,11 @@ class AISimpleEvolution1(Controller):
                 if self.myColor == 0:
                     d = data[r][c]
                 else:
-                    d = data[EDGE_SIZE-1-r][EDGE_SIZE-1-c]
+                    d = data[EDGE_SIZE - 1 - r][EDGE_SIZE - 1 - c]
                 if d == None:
                     ret += self.coefs[r][c][2]
                 else:
-                    ret += self.coefs[r][c][d.color==self.myColor]
+                    ret += self.coefs[r][c][d.color == self.myColor]
         return ret
 
     def decideNextMove(self, board, possibleMoves):

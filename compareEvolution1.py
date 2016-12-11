@@ -1,6 +1,7 @@
 #!/bin/env pypy3
 from controller import AIRandom
 from controllerSimpleEvolution1 import AISimpleEvolution1
+from minimax import MiniMax
 from rules import Game
 import argparse
 
@@ -16,9 +17,11 @@ def parseArguments():
     parser = argparse.ArgumentParser(
         description='Test AISimpleEvolution1 vs random choices')
     parser.add_argument('-i', '--input', help='Input AI data for testing',
-                        dest='inputFile', required=True)
+                        dest='inputFile', default=None)
     parser.add_argument('-n', '--number-of-games', help='Number of played test games',
                         dest='n', default=3000, type=int)
+    parser.add_argument('-t', '--type', help='Testing AI type',
+                        dest='aiType', default='controllerSimpleEvolution1')
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -26,8 +29,17 @@ if __name__ == '__main__':
 
     args = parseArguments()
 
-    ai1 = AISimpleEvolution1()
-    ai1.deserialize(args.inputFile)
+    if args.aiType == 'controllerSimpleEvolution1':
+        print('Given AI: controllerSimpleEvolution1')
+        ai1 = AISimpleEvolution1()
+        assert args.inputFile != None
+        ai1.deserialize(args.inputFile)
+    elif args.aiType == 'minimax':
+        print('Given AI: minimax')
+        ai1 = MiniMax()
+    else:
+        raise 'given AI type is unknown'
+
     ai2 = AIRandom()
 
     # number of games

@@ -1,6 +1,5 @@
 from controller import Controller
 from rules import Game
-import math
 
 
 class MiniMax(Controller):
@@ -10,35 +9,38 @@ class MiniMax(Controller):
         self.player = None
 
     def decideNextMove(self, board, possibleMoves):
+        assert len(possibleMoves) > 0
         self.player = board.currentPlayer
-        best_move = self.maxi(board, self.DEPTH)[1] # get best move, other elem of tuple is score
+        # get best move, other elem of tuple is score
+        best_move = self.maxi(board, self.DEPTH)[1]
         return best_move
 
     def mini(self, board, depth):
         if(depth <= 0):
             return (self.evaluate(board), None)
         mini_moves = board.getPossibleMoves()
-        best_score = math.inf
+        best_score = float('inf')
         best_move = None
         for mm in mini_moves:
             curr = self.maxi(board.getAppliedBoard(mm), depth - 1)[0]
-            if(curr < best_score):
+            if(curr <= best_score):
                 best_score = curr
                 best_move = mm
         return (best_score, best_move)
 
     def maxi(self, board, depth):
-       if(depth <= 0):
-           return (self.evaluate(board), None)
-       maxi_moves = board.getPossibleMoves()
-       best_score = -1*math.inf
-       best_move = None
-       for mm in maxi_moves:
-           curr = self.mini(board.getAppliedBoard(mm), depth - 1)[0]
-           if(curr > best_score):
-               best_score = curr
-               best_move = mm
-       return (best_score, best_move)
+        if(depth <= 0):
+            return (self.evaluate(board), None)
+        maxi_moves = board.getPossibleMoves()
+        best_score = -1 * float('inf')
+        best_move = None
+        for mm in maxi_moves:
+            curr = self.mini(board.getAppliedBoard(mm), depth - 1)[0]
+            if(curr >= best_score):
+                best_score = curr
+                best_move = mm
+        assert best_move in maxi_moves or len(maxi_moves) == 0
+        return (best_score, best_move)
 
     def evaluate(self, game):
         board = game.data
@@ -57,5 +59,3 @@ class MiniMax(Controller):
             return black_players - white_players
         else:
             raise "Current player must be either black or white"
-
-

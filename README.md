@@ -40,9 +40,10 @@ learning phase
 ##compareEvolution1.py 
 testing phase
 ####arguments
-`-i file` ai data to load
 #####optional
 `-n number` number of test games to play
+`-i file` ai data to load
+`-t type' testing ai type
 
 
 

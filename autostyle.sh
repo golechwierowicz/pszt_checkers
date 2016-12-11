@@ -17,4 +17,5 @@ doExecutable compareEvolution1.py
 doLibrary controller.py
 doLibrary controllerSimpleEvolution1.py
 doLibrary rules.py
+doLibrary minimax.py
 # currently display.py is excluded
