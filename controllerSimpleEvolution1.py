@@ -21,14 +21,18 @@ class AISimpleEvolution1(Controller):
             for c in range(EDGE_SIZE):
                 if (r + c) % 2 != 0:
                     continue
-                d = data[r][c]
+                if self.myColor == 0:
+                    d = data[r][c]
+                else:
+                    d = data[EDGE_SIZE-1-r][EDGE_SIZE-1-c]
                 if d == None:
                     ret += self.coefs[r][c][2]
                 else:
-                    ret += self.coefs[r][c][d.color]
+                    ret += self.coefs[r][c][d.color==self.myColor]
         return ret
 
     def decideNextMove(self, board, possibleMoves):
+        self.myColor = board.currentPlayer
         if len(possibleMoves) == 1:
             return possibleMoves[0]
         ret = None

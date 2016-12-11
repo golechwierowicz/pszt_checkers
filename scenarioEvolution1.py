@@ -95,7 +95,10 @@ if __name__ == '__main__':
 
             if s >= bestScore:
                 # mutation was worth
-                print('\nsuccess with score: ', s)
+                if args.scoreCheckersCount:
+                    print('\nsuccess with (score, winRatio): ', s)
+                else:
+                    print('\nsuccess with score==winRatio: ', s)
                 ai = potentialBetterAi
                 bestScore = s
             else:
