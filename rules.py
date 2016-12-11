@@ -213,11 +213,18 @@ class Game:
         data = self.data
         for ch in move.removedCheckers:
             assert data[ch[0]][ch[1]] != None
+            # TODO: check assert below
+            # assert data[ch[0]][ch[1]].color == not self.currentPlayer
             data[ch[0]][ch[1]] = None
         assert data[p1[0]][p1[1]] != None
+        # TODO: check assert below
+        #assert data[p1[0]][p1[1]].color == self.currentPlayer
         assert data[p2[0]][p2[1]] == None
         data[p2[0]][p2[1]] = data[p1[0]][p1[1]]
         data[p1[0]][p1[1]] = None
+
+        # changing current player is connected with applyMove
+        self.currentPlayer = not self.currentPlayer
 
     def getAppliedData(self, move):
         ret = self.copyDataOnly()
@@ -253,7 +260,6 @@ class Game:
                 self, possibleMoves)
         assert nextMove in possibleMoves
         self.applyMove(nextMove)
-        self.currentPlayer = not self.currentPlayer
         self.evolveCheckers()
         self.roundCounter += 1
         if self.roundCounter == 5000:
