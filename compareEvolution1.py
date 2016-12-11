@@ -44,7 +44,7 @@ if __name__ == '__main__':
 
     # number of games
     n = args.n
-    winCounter = [0, 0]
+    winCounter = [0, 0, 0]
     for a in range(n // 2):
         w = playGame(ai1, ai2)
         winCounter[w] += 1
@@ -56,3 +56,5 @@ if __name__ == '__main__':
         print("PERFECT !")
     else:
         print('result: ', winCounter[0] / n)
+
+    print('draw ratio:', winCounter[2] / n)

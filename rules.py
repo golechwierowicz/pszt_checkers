@@ -33,6 +33,7 @@ class Game:
                      for b in range(EDGE_SIZE)]
 
         self.roundCounter = 0
+        self.infiniteGame = False
 
         # place starting checkers
         for r in range(HOW_MANY_ROWS_OF_CHECKERS):
@@ -213,12 +214,11 @@ class Game:
         data = self.data
         for ch in move.removedCheckers:
             assert data[ch[0]][ch[1]] != None
-            # TODO: check assert below
-            # assert data[ch[0]][ch[1]].color == not self.currentPlayer
+            assert data[ch[0]][ch[1]].color == (not self.currentPlayer)
+
             data[ch[0]][ch[1]] = None
         assert data[p1[0]][p1[1]] != None
-        # TODO: check assert below
-        #assert data[p1[0]][p1[1]].color == self.currentPlayer
+        assert data[p1[0]][p1[1]].color == self.currentPlayer
         assert data[p2[0]][p2[1]] == None
         data[p2[0]][p2[1]] = data[p1[0]][p1[1]]
         data[p1[0]][p1[1]] = None
@@ -265,11 +265,12 @@ class Game:
         if self.roundCounter == 5000:
             print("Detected infinite game!")
             self.printBoard()
+            self.infiniteGame = True
 
     def finished(self):
-        # TODO: implement draw (for example if game leasts too long)
-        # or AI will not be wise enough?
-        return len(self.getPossibleMoves()) == 0
+        return len(self.getPossibleMoves()) == 0 or self.infiniteGame
 
     def getWinner(self):
+        if self.infiniteGame:
+            return 2
         return not self.currentPlayer

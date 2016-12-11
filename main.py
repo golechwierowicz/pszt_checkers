@@ -38,4 +38,16 @@ if __name__ == '__main__':
     ai2.deserialize(args.inputFile)
 
     w = playGame(ai2, ai1)
-    print("winner is:", 'Minimax' if w else 'Evolved')
+    w2 = playGame(ai1, ai2)
+
+    print('Game1 result')
+    if w==2:
+        print('Draw')
+    else:
+        print("winner is:", 'Minimax' if w else 'Evolved')
+
+    print('Game2 result')
+    if w2==2:
+        print('Draw')
+    else:
+        print("winner is:", 'Evolved' if w2 else 'Minimax')

@@ -22,7 +22,7 @@ def playGame(ai1, ai2):
 def checkScore(ai, args):
     # check how good is given ai against random choices
     samples = args.m
-    winCounter = [0.0, 0.0]
+    winCounter = [0.0, 0.0, 0.0]
     additionalPoints = 0.0
     ai2 = AIRandom()
 
@@ -42,11 +42,19 @@ def checkScore(ai, args):
                     # queens
                     additionalPoints += 0.15 * w.getCheckersCount()[playAs][1]
             else:
+                if w.getWinner() == 2:
+                    winCounter[2] += 1
                 winCounter[1] += 1
+
+    if winCounter[2]>0:
+        print("Draw occured")
+        # draw is like half of a win
+        additionalPoints += winCounter[2] / samples / 2
+
     if args.scoreCheckersCount:
         return (winCounter[0] + additionalPoints) / samples, winCounter[0] / samples
     else:
-        return winCounter[0] / samples
+        return (winCounter[0] + additionalPoints) / samples
 
 
 def parseArguments():
