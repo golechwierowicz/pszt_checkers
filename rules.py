@@ -46,7 +46,7 @@ class Game:
         newone = type(self)(None, None)
         # newone.__dict__.update(self.__dict__)
         newone.data = [d.copy() for d in self.data]
-       return newone
+        return newone
 
     def getBoard(self):
         return self.data
@@ -222,6 +222,11 @@ class Game:
         ret = self.copyDataOnly()
         ret.applyMove(move)
         return ret.data
+
+    def getAppliedBoard(self, move):
+        ret = self.copyDataOnly()
+        ret.applyMove(move)
+        return ret
 
     # check if any checker reached end of the board
     # and evolve it into queen if it's true

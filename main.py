@@ -1,6 +1,7 @@
 #!/bin/env python3
 from controller import AIRandom
 from controllerSimpleEvolution1 import AISimpleEvolution1
+from minimax import MiniMax
 from rules import Game
 from display import DisplayHelper
 from queue import *
@@ -33,8 +34,9 @@ if __name__ == '__main__':
     args = parseArguments()
     ai1 = AIRandom()
 
-    ai2 = AISimpleEvolution1()
-    ai2.deserialize(args.inputFile)
+#    ai2 = AISimpleEvolution1()
+    ai2 = MiniMax()
+#    ai2.deserialize(args.inputFile)
 
     w = playGame(ai2, ai1)
     print("winner is:", 'Random' if w else 'Evolved')
