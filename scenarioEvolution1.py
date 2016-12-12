@@ -1,6 +1,8 @@
 #!/bin/env pypy3
+# as far as I know, for now only pypy2 can use numpy
 
 from controllerSimpleEvolution1 import AISimpleEvolution1
+from controllerEvolution2 import AIEvolution2
 from controller import AIRandom
 from rules import Game
 import argparse
@@ -46,7 +48,7 @@ def checkScore(ai, args):
                     winCounter[2] += 1
                 winCounter[1] += 1
 
-    if winCounter[2]>0:
+    if winCounter[2] > 0:
         print("Draw occured")
         # draw is like half of a win
         additionalPoints += winCounter[2] / samples / 2
@@ -74,6 +76,10 @@ def parseArguments():
     parser.add_argument('-d', '--determined-cases',
                         help='Mutations and random AI behavior are determined',
                         dest='determinedCases', action='store_true', default=False)
+    parser.add_argument('-t', '--type',
+                        help='Type of AI to train',
+                        dest='aiType', default='controllerSimpleEvolution1')
+
     return parser.parse_args()
 
 if __name__ == '__main__':
@@ -82,10 +88,19 @@ if __name__ == '__main__':
 
     # TODO: implement proper 1+1 algorithm
 
-    # this is AI we will evolve
-    ai = AISimpleEvolution1()
-    if args.inputFile != None:
-        ai.deserialize(args.inputFile)
+    # which AI we will evolve
+    if args.aiType == 'controllerSimpleEvolution1':
+        print('AI: AISimpleEvolution1')
+        ai = AISimpleEvolution1()
+        if args.inputFile != None:
+            ai.deserialize(args.inputFile)
+    elif args.aiType == 'controllerEvolution2':
+        print('AI: AIEvolution2')
+        ai = AIEvolution2()
+        if args.inputFile != None:
+            ai.deserialize(args.inputFile)
+    else:
+        raise BaseException('unknown ai type')
 
     # assume that always loses
     bestScore = checkScore(ai, args)

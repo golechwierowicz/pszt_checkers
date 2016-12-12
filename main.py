@@ -41,13 +41,13 @@ if __name__ == '__main__':
     w2 = playGame(ai1, ai2)
 
     print('Game1 result')
-    if w==2:
+    if w == 2:
         print('Draw')
     else:
         print("winner is:", 'Minimax' if w else 'Evolved')
 
     print('Game2 result')
-    if w2==2:
+    if w2 == 2:
         print('Draw')
     else:
         print("winner is:", 'Evolved' if w2 else 'Minimax')

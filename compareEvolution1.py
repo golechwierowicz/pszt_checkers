@@ -38,7 +38,7 @@ if __name__ == '__main__':
         print('Given AI: minimax')
         ai1 = MiniMax()
     else:
-        raise 'given AI type is unknown'
+        raise BaseException('unknown ai type')
 
     ai2 = AIRandom()
 
