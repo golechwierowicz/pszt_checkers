@@ -78,7 +78,7 @@ def parseArguments():
                         dest='determinedCases', action='store_true', default=False)
     parser.add_argument('-t', '--type',
                         help='Type of AI to train',
-                        dest='aiType', default='controllerSimpleEvolution1')
+                        dest='aiType', default='AIEvolution2')
 
     return parser.parse_args()
 
@@ -89,18 +89,17 @@ if __name__ == '__main__':
     # TODO: implement proper 1+1 algorithm
 
     # which AI we will evolve
-    if args.aiType == 'controllerSimpleEvolution1':
-        print('AI: AISimpleEvolution1')
+    if args.aiType == 'AISimpleEvolution1':
         ai = AISimpleEvolution1()
         if args.inputFile != None:
             ai.deserialize(args.inputFile)
-    elif args.aiType == 'controllerEvolution2':
-        print('AI: AIEvolution2')
+    elif args.aiType == 'AIEvolution2':
         ai = AIEvolution2()
         if args.inputFile != None:
             ai.deserialize(args.inputFile)
     else:
         raise BaseException('unknown ai type')
+    print('Given AI:', args.aiType)
 
     # assume that always loses
     bestScore = checkScore(ai, args)

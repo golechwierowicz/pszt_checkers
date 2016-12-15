@@ -2,15 +2,31 @@ from rules import EDGE_SIZE
 import random
 from controller import Controller
 import copy
+from math import tanh
+
+# numpy is somehow slower in this case
+# (maybe it's because of constructing arrays in the bottleneck)
+
+
+def matmul(a, b):
+    zip_b = zip(*b)
+    return ((tanh(sum(ele_a * ele_b for ele_a, ele_b in zip(row_a, col_b)))
+             for col_b in zip_b) for row_a in a)
 
 
 class AIEvolution2(Controller):
 
     def __init__(self):
-        self.coefs = [random.random()
-                      for col in range(3)
-                      for c in range(EDGE_SIZE // 2)
-                      for r in range(EDGE_SIZE)]
+        self.layersCount = 2
+        self.layersDimensions = [EDGE_SIZE * (EDGE_SIZE // 2) * 3, 10, 1]
+        assert self.layersCount == len(self.layersDimensions) - 1
+
+        di = self.layersDimensions
+        self.layers = [
+            [[random.random() for i in range(di[k + 1])]
+             for j in range(di[k])]
+            for k in range(self.layersCount)
+        ]
 
     def generateInputData(self, board):
         data = []
@@ -30,17 +46,23 @@ class AIEvolution2(Controller):
                         data += [0, 1, 0]
                     else:
                         data += [1, 0, 0]
-        assert len(data) == len(self.coefs)
+        assert len(data) == len(self.layers[0])
         return data
 
     def calcScore(self, board):
         # think if I want my opponent to has such state.
         # Bigger ret means that I want it more.
         data = self.generateInputData(board)
-        ret = 0
-        for i in range(len(data)):
-            ret += data[i] * self.coefs[i]
-        return ret
+
+        ret = [data]
+        for l in self.layers:
+            ret = matmul(ret, l)
+
+        ret = list(ret)
+        assert len(ret) == 1
+        ret = list(ret[0])
+        assert len(ret) == 1
+        return ret[0]
 
     def decideNextMove(self, board, possibleMoves):
         self.myColor = board.currentPlayer
@@ -59,21 +81,20 @@ class AIEvolution2(Controller):
     def copy(self):
         newone = type(self)()
         # newone.__dict__.update(self.__dict__)
-        newone.coefs = copy.deepcopy(self.coefs)
+        newone.layers = copy.deepcopy(self.layers)
         return newone
 
     def mutate(self):
-        for i in range(len(self.coefs)):
-            if random.random() < 0.6:
-                continue
-            for col in range(3):
-                if random.random() < 0.9:
-                    self.coefs[i] += 6 * (0.51 - random.random())
-                else:
-                    self.coefs[i] *= 6 * (0.7 - random.random())
+        for l in range(len(self.layers)):
+            for r in range(len(self.layers[l])):
+                for c in range(len(self.layers[l][r])):
+                    if random.random() < 0.5:
+                        continue
+                    for col in range(3):
+                        self.layers[l][r][c] += random.gauss(0, 1)
 
     def serialize(self, filename):
-        open(filename, 'w').write(str(self.coefs))
+        open(filename, 'w').write(str(self.layers))
 
     def deserialize(self, filename):
-        self.coefs = eval(open(filename, 'r').read())
+        self.layers = eval(open(filename, 'r').read())
