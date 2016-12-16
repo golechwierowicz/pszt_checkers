@@ -23,7 +23,7 @@ class AIEvolution2(Controller):
 
         di = self.layersDimensions
         self.layers = [
-            [[random.random() for i in range(di[k + 1])]
+            [[0 for i in range(di[k + 1])]
              for j in range(di[k])]
             for k in range(self.layersCount)
         ]
@@ -91,7 +91,7 @@ class AIEvolution2(Controller):
                     if random.random() < 0.5:
                         continue
                     for col in range(3):
-                        self.layers[l][r][c] += random.gauss(0, 1)
+                        self.layers[l][r][c] += random.gauss(0, 0.1)
 
     def serialize(self, filename):
         open(filename, 'w').write(str(self.layers))

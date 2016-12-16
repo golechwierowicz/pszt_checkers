@@ -4,6 +4,7 @@
 from controllerSimpleEvolution1 import AISimpleEvolution1
 from controllerEvolution2 import AIEvolution2
 from controller import AIRandom
+from controllerTestingHybrid import AITestingHybrid
 from rules import Game
 import argparse
 import sys
@@ -26,7 +27,11 @@ def checkScore(ai, args):
     samples = args.m
     winCounter = [0.0, 0.0, 0.0]
     additionalPoints = 0.0
-    ai2 = AIRandom()
+
+    if args.randomChoiceOpponent:
+        ai2 = AIRandom()
+    else:
+        ai2 = AITestingHybrid()
 
     for playAs in range(2):
         for a in range(samples // 2):
@@ -79,6 +84,9 @@ def parseArguments():
     parser.add_argument('-t', '--type',
                         help='Type of AI to train',
                         dest='aiType', default='AIEvolution2')
+    parser.add_argument('-r', '--random-choice-opponent',
+                        help='Use random choices as an opponent in target function',
+                        dest='randomChoiceOpponent', action='store_true', default=False)
 
     return parser.parse_args()
 
@@ -98,13 +106,15 @@ if __name__ == '__main__':
         if args.inputFile != None:
             ai.deserialize(args.inputFile)
     else:
-        raise BaseException('unknown ai type')
+        raise Exception('unknown ai type')
     print('Given AI:', args.aiType)
+    if args.randomChoiceOpponent:
+        print('Opponent: AIRandom')
+    else:
+        print('Opponent: AITestingHybrid')
 
-    # assume that always loses
     bestScore = checkScore(ai, args)
 
-    # try teaching in iterations
     try:
         for a in range(args.n):
             potentialBetterAi = ai.copy()
@@ -116,7 +126,7 @@ if __name__ == '__main__':
             s = checkScore(potentialBetterAi, args)
 
             if s >= bestScore:
-                # mutation was worth
+                # mutation was beneficial
                 if args.scoreCheckersCount:
                     print('\nsuccess with (score, winRatio): ', s)
                 else:
@@ -124,7 +134,7 @@ if __name__ == '__main__':
                 ai = potentialBetterAi
                 bestScore = s
             else:
-                # mutation was not worth
+                # mutation was not beneficial
                 print('.', end='')
                 sys.stdout.flush()
     except KeyboardInterrupt:

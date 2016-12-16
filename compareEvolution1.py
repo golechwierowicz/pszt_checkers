@@ -2,6 +2,7 @@
 from controller import AIRandom
 from controllerSimpleEvolution1 import AISimpleEvolution1
 from controllerEvolution2 import AIEvolution2
+from controllerTestingHybrid import AITestingHybrid
 from minimax import MiniMax
 from rules import Game
 import argparse
@@ -38,6 +39,8 @@ if __name__ == '__main__':
         ai1 = AIEvolution2()
         assert args.inputFile != None
         ai1.deserialize(args.inputFile)
+    elif args.aiType == 'AITestingHybrid':
+        ai1 = AITestingHybrid()
     elif args.aiType == 'minimax':
         ai1 = MiniMax()
     else:
