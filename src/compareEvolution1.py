@@ -23,7 +23,7 @@ def parseArguments():
     parser.add_argument('-n', '--number-of-games', help='Number of played test games',
                         dest='n', default=3000, type=int)
     parser.add_argument('-t', '--type', help='Testing AI type',
-                        dest='aiType', default='AISimpleEvolution1')
+                        dest='aiType', default='AIEvolution2')
     return parser.parse_args()
 
 if __name__ == '__main__':

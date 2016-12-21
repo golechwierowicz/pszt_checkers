@@ -15,6 +15,10 @@ class MiniMax(Controller):
         best_move = self.maxi(board, self.DEPTH)[1]
         return best_move
 
+    def getBoardScore(self, board):
+        self.player = board.currentPlayer
+        return self.maxi(board, self.DEPTH)[0]
+
     def mini(self, board, depth):
         if(depth <= 0):
             return (self.evaluate(board), None)

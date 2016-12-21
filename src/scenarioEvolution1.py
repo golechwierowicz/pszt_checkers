@@ -83,19 +83,14 @@ def parseArguments():
                         dest='determinedCases', action='store_true', default=False)
     parser.add_argument('-t', '--type',
                         help='Type of AI to train',
-                        dest='aiType', default='AISimpleEvolution1')
+                        dest='aiType', default='AIEvolution2')
     parser.add_argument('-r', '--random-choice-opponent',
                         help='Use random choices as an opponent in target function',
                         dest='randomChoiceOpponent', action='store_true', default=False)
 
     return parser.parse_args()
 
-if __name__ == '__main__':
-
-    args = parseArguments()
-
-    # TODO: implement proper 1+1 algorithm
-
+def initAI(args):
     # which AI we will evolve
     if args.aiType == 'AISimpleEvolution1':
         ai = AISimpleEvolution1()
@@ -107,15 +102,12 @@ if __name__ == '__main__':
             ai.deserialize(args.inputFile)
     else:
         raise Exception('unknown ai type')
-    print('Given AI:', args.aiType)
-    if args.randomChoiceOpponent:
-        print('Opponent: AIRandom')
-    else:
-        print('Opponent: AITestingHybrid')
+    return ai
 
-    bestScore = checkScore(ai, args)
 
+def onePlusOne(ai, checkScoreFun, args):
     try:
+        bestScore = checkScoreFun(ai, args)
         for a in range(args.n):
             potentialBetterAi = ai.copy()
             if args.determinedCases:
@@ -123,14 +115,14 @@ if __name__ == '__main__':
             potentialBetterAi.mutate()
             if args.determinedCases:
                 random.seed(0)
-            s = checkScore(potentialBetterAi, args)
+            s = checkScoreFun(potentialBetterAi, args)
 
             if s >= bestScore:
                 # mutation was beneficial
-                if args.scoreCheckersCount:
+                if type(s) == tuple:
                     print('\nsuccess with (score, winRatio): ', s)
                 else:
-                    print('\nsuccess with score==winRatio: ', s)
+                    print('\nsuccess with score: ', s)
                 ai = potentialBetterAi
                 bestScore = s
             else:
@@ -143,3 +135,19 @@ if __name__ == '__main__':
     # save ai data
     print('Saving data to file')
     ai.serialize(args.outputFile)
+
+if __name__ == '__main__':
+
+    args = parseArguments()
+
+    # TODO: implement proper 1+1 algorithm
+
+    ai = initAI(args)
+
+    print('Given AI:', args.aiType)
+    if args.randomChoiceOpponent:
+        print('Opponent: AIRandom')
+    else:
+        print('Opponent: AITestingHybrid')
+
+    onePlusOne(ai, checkScore, args)

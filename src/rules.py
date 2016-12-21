@@ -50,6 +50,14 @@ class Game:
         newone.currentPlayer = self.currentPlayer
         return newone
 
+    def copy(self):
+        newone = self.copyDataOnly()
+        newone.controller1 = self.controller1
+        newone.controller2 = self.controller2
+        newone.roundCounter = self.roundCounter
+        newone.infiniteGame = self.infiniteGame
+        return newone
+
     def getBoard(self):
         return self.data
 
