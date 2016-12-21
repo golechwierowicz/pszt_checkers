@@ -83,7 +83,7 @@ def parseArguments():
                         dest='determinedCases', action='store_true', default=False)
     parser.add_argument('-t', '--type',
                         help='Type of AI to train',
-                        dest='aiType', default='AIEvolution2')
+                        dest='aiType', default='AISimpleEvolution1')
     parser.add_argument('-r', '--random-choice-opponent',
                         help='Use random choices as an opponent in target function',
                         dest='randomChoiceOpponent', action='store_true', default=False)

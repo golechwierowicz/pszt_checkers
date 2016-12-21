@@ -11,7 +11,7 @@ class AITestingHybrid(MiniMax):
         super(AITestingHybrid, self).__init__()
 
     def decideNextMove(self, board, possibleMoves):
-        if random.random() < 0.2:
+        if random.random() < 0.1:
             return super(AITestingHybrid, self).decideNextMove(board, possibleMoves)
         else:
             return random.choice(possibleMoves)

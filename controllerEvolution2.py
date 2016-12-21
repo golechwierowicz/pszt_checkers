@@ -16,14 +16,18 @@ def matmul(a, b):
 
 class AIEvolution2(Controller):
 
-    def __init__(self):
-        self.layersCount = 2
-        self.layersDimensions = [EDGE_SIZE * (EDGE_SIZE // 2) * 3, 10, 1]
+    def __init__(self, layers=None):
+        # TODO: add bias?
+        if layers == None:
+            self.layersCount = 2
+            self.layersDimensions = [EDGE_SIZE * (EDGE_SIZE // 2) * 3, 10, 1]
+        else:
+            self.layersCount = len(layers)
+            self.layersDimensions = layers.copy()
         assert self.layersCount == len(self.layersDimensions) - 1
-
         di = self.layersDimensions
         self.layers = [
-            [[0 for i in range(di[k + 1])]
+            [[random.gauss(0,1) for i in range(di[k + 1])]
              for j in range(di[k])]
             for k in range(self.layersCount)
         ]
@@ -88,10 +92,8 @@ class AIEvolution2(Controller):
         for l in range(len(self.layers)):
             for r in range(len(self.layers[l])):
                 for c in range(len(self.layers[l][r])):
-                    if random.random() < 0.5:
-                        continue
                     for col in range(3):
-                        self.layers[l][r][c] += random.gauss(0, 0.1)
+                        self.layers[l][r][c] += random.gauss(0, 1)
 
     def serialize(self, filename):
         open(filename, 'w').write(str(self.layers))
