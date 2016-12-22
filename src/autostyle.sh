@@ -13,10 +13,12 @@ function doExecutable {
 doExecutable main.py
 doExecutable scenarioEvolution1.py
 doExecutable compareEvolution1.py
+doExecutable tests.py
 
 doLibrary controller.py
 doLibrary controllerSimpleEvolution1.py
 doLibrary rules.py
 doLibrary minimax.py
 doLibrary controllerEvolution2.py
+doLibrary StateGenerator.py
 # currently display.py is excluded
