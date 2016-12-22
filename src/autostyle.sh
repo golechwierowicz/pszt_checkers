@@ -14,6 +14,7 @@ doExecutable main.py
 doExecutable scenarioEvolution1.py
 doExecutable compareEvolution1.py
 doExecutable tests.py
+doExecutable convertAIData.py
 
 doLibrary controller.py
 doLibrary controllerSimpleEvolution1.py
