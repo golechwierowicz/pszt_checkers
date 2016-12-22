@@ -1,5 +1,4 @@
 #!/bin/env pypy3
-# as far as I know, for now only pypy2 can use numpy
 
 from controllerSimpleEvolution1 import AISimpleEvolution1
 from controllerEvolution2 import AIEvolution2
@@ -90,13 +89,14 @@ def parseArguments():
 
     return parser.parse_args()
 
+
 def initAI(args):
     # which AI we will evolve
-    if args.aiType == 'AISimpleEvolution1':
+    if args.aiType in ('AISimpleEvolution1', '1'):
         ai = AISimpleEvolution1()
         if args.inputFile != None:
             ai.deserialize(args.inputFile)
-    elif args.aiType == 'AIEvolution2':
+    elif args.aiType in ('AIEvolution2', '2'):
         ai = AIEvolution2()
         if args.inputFile != None:
             ai.deserialize(args.inputFile)

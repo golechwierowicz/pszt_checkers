@@ -9,9 +9,8 @@ from math import tanh
 
 
 def matmul(a, b):
-    zip_b = zip(*b)
-    return ((tanh(sum(ele_a * ele_b for ele_a, ele_b in zip(row_a, col_b)))
-             for col_b in zip_b) for row_a in a)
+    return ((sum(ele_a * ele_b for ele_a, ele_b in zip(row_a, col_b))
+             for col_b in zip(*b)) for row_a in a)
 
 
 class AIEvolution2(Controller):
@@ -22,7 +21,7 @@ class AIEvolution2(Controller):
             # self.layersCount = 2
             # self.layersDimensions = [EDGE_SIZE * (EDGE_SIZE // 2) * 3, 10, 1]
             self.layersCount = 1
-            self.layersDimensions = [EDGE_SIZE * (EDGE_SIZE // 2) * 3, 1]
+            self.layersDimensions = [1, EDGE_SIZE * (EDGE_SIZE // 2) * 3]
         else:
             self.layersCount = len(layersDimensions)
             self.layersDimensions = layersDimensions.copy()
@@ -30,15 +29,16 @@ class AIEvolution2(Controller):
         di = self.layersDimensions
 
         self.layers = [
-            [[random.gauss(0,1) for i in range(di[k + 1])]
+            [[random.gauss(0, 1) for i in range(di[k + 1])]
              for j in range(di[k])]
             for k in range(self.layersCount)
         ]
 
-        assert len(self.layers)==self.layersCount
+        assert len(self.layers) == self.layersCount
 
         # for assertion
-        self.variablesCount = sum(di[i]*di[i+1] for i in range(len(di)-1))
+        self.variablesCount = sum(di[i] * di[i + 1]
+                                  for i in range(len(di) - 1))
 
     def generateInputData(self, board):
         data = []
@@ -58,7 +58,7 @@ class AIEvolution2(Controller):
                         data += [0, 1, 0]
                     else:
                         data += [1, 0, 0]
-        assert len(data) == len(self.layers[0])
+        assert len(data) == EDGE_SIZE * (EDGE_SIZE // 2) * 3
         return data
 
     def calcScore(self, board):
@@ -66,17 +66,21 @@ class AIEvolution2(Controller):
         # Bigger ret means that I want it more.
         data = self.generateInputData(board)
 
-        assert len(self.layers)==self.layersCount
-        assert len(self.layers)==len(self.layersDimensions)-1
-        ret = [data]
+        assert len(self.layers) == self.layersCount
+        assert len(self.layers) == len(self.layersDimensions) - 1
+        ret = [[d] for d in data]
+        assert len(ret) == EDGE_SIZE * (EDGE_SIZE // 2) * 3
+        assert len(self.layers[0]) == 1
+        assert len(self.layers) == 1
         for l in self.layers:
-            ret = matmul(ret, l)
+            ret = matmul(l, ret)
 
+        # print(list(ret))
         ret = list(ret)
         assert len(ret) == 1
         ret = list(ret[0])
         assert len(ret) == 1
-        assert type(ret[0])==float
+        assert type(ret[0]) == float
         return ret[0]
 
     def getBoardScore(self, board):
@@ -104,14 +108,13 @@ class AIEvolution2(Controller):
         return newone
 
     def mutate(self):
-        assert self.layersDimensions[-1]==1
-        counter=0
+        assert self.layersDimensions[0] == 1
+        counter = 0
         for l in range(len(self.layers)):
-            assert len(self.layers[l]) == self.layersDimensions[l]
             for r in range(len(self.layers[l])):
                 for c in range(len(self.layers[l][r])):
                     self.layers[l][r][c] += random.gauss(0, 1)
-                    counter+=1
+                    counter += 1
         assert counter == self.variablesCount
 
     def serialize(self, filename):

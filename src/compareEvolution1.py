@@ -31,11 +31,11 @@ if __name__ == '__main__':
 
     args = parseArguments()
 
-    if args.aiType == 'AISimpleEvolution1':
+    if args.aiType in ('AISimpleEvolution1', '1'):
         ai1 = AISimpleEvolution1()
         assert args.inputFile != None
         ai1.deserialize(args.inputFile)
-    elif args.aiType == 'AIEvolution2':
+    elif args.aiType in ('AIEvolution2', '2'):
         ai1 = AIEvolution2()
         assert args.inputFile != None
         ai1.deserialize(args.inputFile)

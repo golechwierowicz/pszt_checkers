@@ -7,7 +7,7 @@ import copy
 class AISimpleEvolution1(Controller):
 
     def __init__(self):
-        self.coefs = [[[random.gauss(0,1)
+        self.coefs = [[[random.gauss(0, 1) if (r + c) % 2 == 0 else 0
                         for col in range(3)]
                        for c in range(EDGE_SIZE)]
                       for r in range(EDGE_SIZE)]
@@ -52,12 +52,15 @@ class AISimpleEvolution1(Controller):
         return newone
 
     def mutate(self):
+        counter = 0
         for r in range(EDGE_SIZE):
             for c in range(EDGE_SIZE):
                 if (r + c) % 2 != 0:
                     continue
                 for col in range(3):
-                    self.coefs[r][c][col] += random.gauss(0,1)
+                    self.coefs[r][c][col] += random.gauss(0, 1)
+                    counter += 1
+        assert counter == EDGE_SIZE * (EDGE_SIZE // 2) * 3
 
     def serialize(self, filename):
         open(filename, 'w').write(str(self.coefs))
