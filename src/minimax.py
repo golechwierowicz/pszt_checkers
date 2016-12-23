@@ -4,20 +4,20 @@ from rules import Game
 
 class MiniMax(Controller):
 
-    def __init__(self):
-        self.DEPTH = 3
+    def __init__(self, depth=3):
+        self.depth = depth
         self.player = None
 
     def decideNextMove(self, board, possibleMoves):
         assert len(possibleMoves) > 0
         self.player = board.currentPlayer
         # get best move, other elem of tuple is score
-        best_move = self.maxi(board, self.DEPTH)[1]
+        best_move = self.maxi(board, self.depth)[1]
         return best_move
 
     def getBoardScore(self, board):
         self.player = board.currentPlayer
-        return self.maxi(board, self.DEPTH)[0]
+        return self.maxi(board, self.depth)[0]
 
     def mini(self, board, depth):
         if(depth <= 0):

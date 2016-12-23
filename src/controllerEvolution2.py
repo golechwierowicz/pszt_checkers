@@ -18,23 +18,21 @@ class AIEvolution2(Controller):
     def __init__(self, layersDimensions=None):
         # TODO: add bias?
         if layersDimensions == None:
-            # self.layersCount = 2
-            # self.layersDimensions = [EDGE_SIZE * (EDGE_SIZE // 2) * 3, 10, 1]
-            self.layersCount = 1
-            self.layersDimensions = [1, EDGE_SIZE * (EDGE_SIZE // 2) * 3]
+            layersCount = 2
+            self.layersDimensions = [1, 8, EDGE_SIZE * (EDGE_SIZE // 2) * 3]
         else:
-            self.layersCount = len(layersDimensions)
+            layersCount = len(layersDimensions) - 1
             self.layersDimensions = layersDimensions.copy()
-        assert self.layersCount == len(self.layersDimensions) - 1
+        assert layersCount == len(self.layersDimensions) - 1
         di = self.layersDimensions
 
         self.layers = [
-            [[random.gauss(0, 1) for i in range(di[k + 1])]
+            [[0.0 for i in range(di[k + 1])]
              for j in range(di[k])]
-            for k in range(self.layersCount)
+            for k in range(layersCount)
         ]
 
-        assert len(self.layers) == self.layersCount
+        assert len(self.layers) == layersCount
 
         # for assertion
         self.variablesCount = sum(di[i] * di[i + 1]
@@ -64,18 +62,16 @@ class AIEvolution2(Controller):
     def calcScore(self, board):
         # think if I want my opponent to has such state.
         # Bigger ret means that I want it more.
-        data = self.generateInputData(board)
 
-        assert len(self.layers) == self.layersCount
-        assert len(self.layers) == len(self.layersDimensions) - 1
+        data = self.generateInputData(board)
         ret = [[d] for d in data]
+
+        assert len(self.layers) == len(self.layersDimensions) - 1
         assert len(ret) == EDGE_SIZE * (EDGE_SIZE // 2) * 3
         assert len(self.layers[0]) == 1
-        assert len(self.layers) == 1
-        for l in self.layers:
+        for l in reversed(self.layers):
             ret = matmul(l, ret)
 
-        # print(list(ret))
         ret = list(ret)
         assert len(ret) == 1
         ret = list(ret[0])
@@ -105,6 +101,7 @@ class AIEvolution2(Controller):
         newone = type(self)()
         # newone.__dict__.update(self.__dict__)
         newone.layers = copy.deepcopy(self.layers)
+        newone.layersDimension = self.layersDimensions.copy()
         return newone
 
     def mutate(self):
@@ -118,7 +115,7 @@ class AIEvolution2(Controller):
         assert counter == self.variablesCount
 
     def serialize(self, filename):
-        open(filename, 'w').write(str(self.layers))
+        open(filename, 'w').write(str((self.layersDimension, self.layers)))
 
     def deserialize(self, filename):
-        self.layers = eval(open(filename, 'r').read())
+        self.layersDimensions, self.layers = eval(open(filename, 'r').read())
