@@ -47,6 +47,13 @@ class MiniMax(Controller):
         return (best_score, best_move)
 
     def evaluate(self, game):
+        return self.evaluate2(game)
+
+    def evaluate1(self, game):
+        """
+        Simple heuristic evalutation,
+        Just count checkers
+        """
         board = game.data
         white_players = 0
         black_players = 0
@@ -63,3 +70,24 @@ class MiniMax(Controller):
             return black_players - white_players
         else:
             raise "Current player must be either black or white"
+
+    def evaluate2(self, game):
+        """
+        Simple heuristic evalutation,
+        Count checkers with weights depending on checker type
+        (normal or queen)
+        """
+        board = game.data
+        score = [0.0, 0.0]  # score for each color
+        for row in board:
+            for p in row:
+                if p == None:
+                    continue
+                score[p.color] += (1 if p.type == 0 else 2.1)
+
+        we = self.player
+        assert we in (0, 1)
+        if(we == 0):
+            return score[0] - score[1]
+        elif(we == 1):
+            return score[1] - score[0]

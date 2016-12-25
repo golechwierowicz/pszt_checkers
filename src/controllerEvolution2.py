@@ -4,11 +4,13 @@ from controller import Controller
 import copy
 from math import tanh
 
-# numpy is somehow slower in this case
-# (maybe it's because of constructing arrays in the bottleneck)
-
 
 def matmul(a, b):
+    a = list(map(list, a))
+    b = list(map(list, b))
+    assert len(a[0]) == len(b)
+    assert len(a) > 0
+    assert len(b[0]) > 0
     return ((sum(ele_a * ele_b for ele_a, ele_b in zip(row_a, col_b))
              for col_b in zip(*b)) for row_a in a)
 
@@ -19,7 +21,7 @@ class AIEvolution2(Controller):
         # TODO: add bias?
         if layersDimensions == None:
             layersCount = 2
-            self.layersDimensions = [1, 8, EDGE_SIZE * (EDGE_SIZE // 2) * 3]
+            self.layersDimensions = [EDGE_SIZE * (EDGE_SIZE // 2) * 3, 8, 1]
         else:
             layersCount = len(layersDimensions) - 1
             self.layersDimensions = layersDimensions.copy()
@@ -27,12 +29,13 @@ class AIEvolution2(Controller):
         di = self.layersDimensions
 
         self.layers = [
-            [[0.0 for i in range(di[k + 1])]
-             for j in range(di[k])]
+            [[0.0 for i in range(di[k])]
+             for j in range(di[k + 1])]
             for k in range(layersCount)
         ]
 
         assert len(self.layers) == layersCount
+        assert len(self.layers[0]) == self.layersDimensions[1]
 
         # for assertion
         self.variablesCount = sum(di[i] * di[i + 1]
@@ -60,16 +63,17 @@ class AIEvolution2(Controller):
         return data
 
     def calcScore(self, board):
-        # think if I want my opponent to has such state.
-        # Bigger ret means that I want it more.
+        """
+        How much I want my opponent to has such state.
+        """
 
         data = self.generateInputData(board)
         ret = [[d] for d in data]
 
         assert len(self.layers) == len(self.layersDimensions) - 1
         assert len(ret) == EDGE_SIZE * (EDGE_SIZE // 2) * 3
-        assert len(self.layers[0]) == 1
-        for l in reversed(self.layers):
+        assert len(ret) == len(self.layers[0][0])
+        for l in self.layers:
             ret = matmul(l, ret)
 
         ret = list(ret)
@@ -80,8 +84,11 @@ class AIEvolution2(Controller):
         return ret[0]
 
     def getBoardScore(self, board):
+        """
+        Say how much you want to be in this state
+        """
         self.myColor = board.currentPlayer
-        return self.calcScore(board.data)
+        return -self.calcScore(board.data)
 
     def decideNextMove(self, board, possibleMoves):
         self.myColor = board.currentPlayer
@@ -101,11 +108,10 @@ class AIEvolution2(Controller):
         newone = type(self)()
         # newone.__dict__.update(self.__dict__)
         newone.layers = copy.deepcopy(self.layers)
-        newone.layersDimension = self.layersDimensions.copy()
+        newone.layersDimensions = self.layersDimensions.copy()
         return newone
 
     def mutate(self):
-        assert self.layersDimensions[0] == 1
         counter = 0
         for l in range(len(self.layers)):
             for r in range(len(self.layers[l])):
@@ -115,7 +121,7 @@ class AIEvolution2(Controller):
         assert counter == self.variablesCount
 
     def serialize(self, filename):
-        open(filename, 'w').write(str((self.layersDimension, self.layers)))
+        open(filename, 'w').write(str((self.layersDimensions, self.layers)))
 
     def deserialize(self, filename):
         self.layersDimensions, self.layers = eval(open(filename, 'r').read())

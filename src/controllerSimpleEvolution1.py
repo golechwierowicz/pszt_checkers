@@ -14,8 +14,9 @@ class AISimpleEvolution1(Controller):
         # coefs[row][collumn][color] - color==2 means that there is no checker
 
     def calcScore(self, data):
-        # think if I want my opponent to has such state.
-        # Bigger ret means that I want it more.
+        """
+        How much I want my opponent to has such state.
+        """
         ret = 0
         for r in range(EDGE_SIZE):
             for c in range(EDGE_SIZE):

@@ -234,6 +234,8 @@ class Game:
         # changing current player is connected with applyMove
         self.currentPlayer = not self.currentPlayer
 
+        self.evolveCheckers()
+
     def getAppliedData(self, move):
         ret = self.copyDataOnly()
         ret.applyMove(move)
@@ -268,7 +270,6 @@ class Game:
                 self, possibleMoves)
         assert nextMove in possibleMoves
         self.applyMove(nextMove)
-        self.evolveCheckers()
         self.roundCounter += 1
         if self.roundCounter == 5000:
             print("Detected infinite game!")

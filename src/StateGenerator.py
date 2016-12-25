@@ -46,7 +46,7 @@ class StateGenerator:
             s = []
             while not g.finished():
                 g.nextMove()
-                if random.random() < 0.03:
+                if random.random() < 0.02:
                     s.append(g.copy())
             if g.getWinner() != 2:
                 states += s

@@ -34,6 +34,20 @@ def testMatmul():
     assert c == list(map(list, matmul(a, b)))
     for r in matmul(a, b):
         print(list(r))
+    print()
+
+    a = [[3, 1],
+         [0, 3]]
+    b = [[1],
+         [0]]
+    c = [[1]]
+    d = [[6]]
+    res = matmul(matmul(matmul(a, b), c), d)
+    res = list(map(list, res))
+    assert res == [[18], [0]]
+    for r in res:
+        print(r)
+
 
 ##################################################################
 
@@ -63,4 +77,4 @@ def testStateGenerator():
 
 if __name__ == '__main__':
     testMatmul()
-    testStateGenerator()
+    # testStateGenerator()

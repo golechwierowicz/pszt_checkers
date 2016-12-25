@@ -34,7 +34,7 @@ if __name__ == '__main__':
     args = parseArguments()
 
     ai1 = MiniMax()
-    ai2 = AISimpleEvolution1()
+    ai2 = AIEvolution2()
     ai2.deserialize(args.inputFile)
 
     w = playGame(ai2, ai1)
