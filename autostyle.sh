@@ -16,6 +16,7 @@ doExecutable ./src/compareEvolution1.py
 doExecutable ./src/tests.py
 doExecutable ./src/convertAIData.py
 doExecutable ./src/nNetworkTest1.py
+doExecutable ./src/nNetworkTest2.py
 
 doLibrary ./src/controller.py
 doLibrary ./src/controllerSimpleEvolution1.py

@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 '''
-Sine approximation using NNetwork
+2 arguments function approximation using NNetwork
 '''
 from nNetwork import NNetwork
 import matplotlib.pyplot as plt
 import random
 import math
 import numpy as np
+from itertools import product, islice
 
 
 class LearningSetGenerator:
@@ -20,6 +21,10 @@ class LearningSetGenerator:
 
     def __next__(self):
         batch = np.array([[random.random()] for i in range(self._batchSize)])
+
+        batch = [[random.random(), random.random()]
+                 for x, y in product(range(self._batchSize), range(self._batchSize))]
+
         expected = np.array([[self._targetFun(b)] for b in batch])
         return batch, expected
 
@@ -31,36 +36,44 @@ class MyPlot:
         self._figure = plt.figure()
         self._targetFun = targetFun
 
-        samplesX = [-0.5, 1.5]
-        samplesY = [-1.5, 1.5]
-        self._p1, = plt.plot(samplesX, samplesY)
-        self._p2, = plt.plot(samplesX, samplesY)
+        samplesCount = 64
+        d = [[0.0 for y in range(samplesCount)] for x in range(samplesCount)]
+
+        self._p1 = plt.subplot(3, 1, 1)
+        self._p1.pcolor(d, cmap=plt.get_cmap('seismic'),
+                        vmin=-np.max(np.abs(d)), vmax=np.max(np.abs(d)))
+
+        self._p2 = plt.subplot(3, 1, 2)
+        self._p2.pcolor(d, cmap=plt.get_cmap('seismic'),
+                        vmin=-np.max(np.abs(d)), vmax=np.max(np.abs(d)))
+
         plt.show(False)
 
     def update(self):
-        samplesCount = 1000
-        samples = [x / samplesCount for x in range(samplesCount)]
+        samplesCount = 64
 
-        s1 = list(self._nn.evaluate([[s] for s in samples]))
-        assert len(s1) == samplesCount
-        assert len(s1[0]) == 1
+        samples = [[x / samplesCount, y / samplesCount]
+                   for x, y in product(range(samplesCount), range(samplesCount))]
 
-        s2 = list(map(self._targetFun, samples))
+        d = [[self._targetFun(x / samplesCount, y / samplesCount)
+              for y in range(samplesCount)] for x in range(samplesCount)]
+        self._p1.pcolor(d, cmap=plt.get_cmap('seismic'),
+                        vmin=-np.max(np.abs(d)), vmax=np.max(np.abs(d)))
 
-        self._p1.set_xdata(samples)
-        self._p1.set_ydata([s[0] for s in s1])
-
-        self._p2.set_xdata(samples)
-        self._p2.set_ydata(s2)
+        d = [[self._nn.evaluate([[x / samplesCount, y / samplesCount]])[0][0]
+              for y in range(samplesCount)] for x in range(samplesCount)]
+        self._p2.pcolor(d, cmap=plt.get_cmap('seismic'),
+                        vmin=-np.max(np.abs(d)), vmax=np.max(np.abs(d)))
 
         plt.pause(0.001)
 
 
-def f(x):
-    arg = 12 * np.pi * x
-    return math.sin(arg)
+def f(x, y):
+    arg1 = 6 * np.pi * x
+    arg2 = 6 * np.pi * y
+    return math.sin(arg1) + math.sin(arg2)
 
-nn = NNetwork([1, 30, 50, 30, 1])
+nn = NNetwork([2, 30, 50, 30, 1])
 lsg = LearningSetGenerator(f, batchSize=20)
 mp = MyPlot(nn, f)
 
@@ -70,9 +83,8 @@ while True:
     try:
         for batch, expected in lsg:
             res = nn.train(batch, expected)
-            if counter % 2000 == 0:
+            if counter % 200 == 0:
                 print(res)
-            if counter % 1000 == 0:
                 mp.update()
             counter += 1
     except KeyboardInterrupt:
@@ -98,10 +110,3 @@ while True:
             newBatchSize = int(input())
             print('setting batch size: ', newBatchSize)
             lsg = LearningSetGenerator(f, batchSize=newBatchSize)
-
-# for a in range(len(nn._data)):
-#     print('-----------------------------------------')
-#     print('layer number: ',str(a))
-#     print('layer data:\n',nn._data[a].get_value())
-#     print('layer bias data:\n',nn._bias[a].get_value())
-#     assert len(nn._data)==len(nn._bias)
