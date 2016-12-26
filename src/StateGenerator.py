@@ -68,4 +68,4 @@ class LearningSetGenerator:
         return m.getBoardScore(s)
 
     def __iter__(self):
-        return ((self.evalState(s), s) for s in StateGenerator(self.n))
+        return ((s, self.evalState(s)) for s in StateGenerator(self.n))

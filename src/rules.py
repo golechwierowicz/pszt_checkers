@@ -43,6 +43,9 @@ class Game:
                 r1 = EDGE_SIZE - 1 - r
                 self.data[r1][c] = Checker(1, 0)
 
+    def __repr__(self):
+        return 'Game()'
+
     def copyDataOnly(self):
         # don't copy controllers
         newone = type(self)(None, None)

@@ -6,9 +6,16 @@ import math
 
 
 class NNetwork:
+    '''
+    Generic neural network.
+    '''
 
-    def __init__(self, layersDimenstions):
-        self._layersDimenstions = layersDimenstions
+    def __init__(self, layersSizes):
+        '''
+        :param layersSizes: list of layers sizes: [input, hidden1, ... , output]
+        :type layersSizes: list of int
+        '''
+        self._layersSizes = layersSizes
 
         def initMatrix(height, width):
             return np.array([[random.gauss(0, 0.1) for col in range(width)]for row in range(height)])
@@ -16,7 +23,7 @@ class NNetwork:
         def initVector(height):
             return np.array([random.gauss(0, 0.1) for row in range(height)])
 
-        ldi = self._layersDimenstions
+        ldi = self._layersSizes
         self._data = [shared(initMatrix(ldi[i + 1], ldi[i]))
                       for i in range(len(ldi) - 1)]
         self._bias = [shared(initVector(ldi[i + 1]))
@@ -24,13 +31,10 @@ class NNetwork:
 
         mx = T.dmatrix('mx')
         my = mx
-        # for i,l in enumerate(self._data):
-        #    my = T.tanh( T.dot(l,my) + T.reshape(self._bias[i],(-1,)) )
 
         activationFun = T.nnet.relu  # seems to work best of these 3
         #activationFun = T.nnet.sigmoid
         # activationFun = T.tanh # seems to be worst of these 3
-
         for i in range(len(ldi) - 2):
             my = activationFun(
                 T.dot(self._data[i], my) + T.reshape(self._bias[i], (ldi[i + 1], 1)))
@@ -78,10 +82,40 @@ class NNetwork:
         )
 
     def evaluate(self, batch):
-        assert len(batch) == self._layersDimenstions[-1]
-        return self._evaluate(batch)
+        '''
+        :param batch: list of input vectors
+        :return: list of output vectors
+        '''
+        assert len(batch) > 0
+        assert len(batch[0]) == self._layersSizes[0]
+
+        batch = list(zip(*batch))
+
+        ret = list(zip(*self._evaluate(batch)))
+        assert len(ret) > 0
+        assert len(ret[0]) == self._layersSizes[-1]
+        return ret
 
     def train(self, batch, expected):
+        '''
+        :param batch: list of input vectors
+        :param expected: list of expected output vectors
+        :return: cost value
+        :rtype: float
+        '''
+        assert len(batch) > 0
+        assert len(batch[0]) == self._layersSizes[0]
+
+        assert len(expected) > 0
+        assert len(expected[0]) == self._layersSizes[-1]
+
+        batch = list(zip(*batch))
+        expected = list(zip(*expected))
+
+        assert len(batch[0]) == len(expected[0])
+        assert len(batch) == self._layersSizes[0]
+        assert len(expected) == self._layersSizes[-1]
+
         return self._train(batch, expected)
 
     def setLearningRate(self, value):

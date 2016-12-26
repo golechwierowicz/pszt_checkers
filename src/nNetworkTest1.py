@@ -20,8 +20,7 @@ class LearningSetGenerator:
 
     def __next__(self):
         batch = np.array([[random.random()] for i in range(self._batchSize)])
-        expected = np.array([list(map(self._targetFun, batch))])
-        batch = batch.transpose()
+        expected = np.array([[self._targetFun(b)] for b in batch])
         return batch, expected
 
 
@@ -42,16 +41,14 @@ class MyPlot:
         samplesCount = 1000
         samples = [x / samplesCount for x in range(samplesCount)]
 
-        s1 = list(self._nn.evaluate([samples]))
-        assert len(s1) == 1
-        assert len(s1[0]) == len(samples)
-        #s1 = [self._nn.evaluate([[s]])[0][0] for s in samples]
+        s1 = list(self._nn.evaluate([[s] for s in samples]))
+        assert len(s1) == samplesCount
+        assert len(s1[0]) == 1
 
         s2 = list(map(self._targetFun, samples))
 
         self._p1.set_xdata(samples)
-        self._p1.set_ydata(s1[0])
-        # self._p1.set_ydata(s1)
+        self._p1.set_ydata([s[0] for s in s1])
 
         self._p2.set_xdata(samples)
         self._p2.set_ydata(s2)

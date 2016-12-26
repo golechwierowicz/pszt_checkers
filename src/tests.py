@@ -69,12 +69,12 @@ def testStateGenerator():
     #    #print('score:',score)
     #    input()
 
-    for score, state in LearningSetGenerator(10, depth=8):
-        state.printBoard()
+    for state, score in LearningSetGenerator(10, depth=5):
+        state.printBoard(False)
         print('score:', score)
         input()
 
 
 if __name__ == '__main__':
     testMatmul()
-    # testStateGenerator()
+    testStateGenerator()
