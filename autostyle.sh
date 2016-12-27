@@ -18,6 +18,7 @@ doExecutable ./src/convertAIData.py
 doExecutable ./src/nNetworkTest1.py
 doExecutable ./src/nNetworkTest2.py
 doExecutable ./src/generateLearningSet.py
+doExecutable ./src/scenarioEvolution2.py
 
 doLibrary ./src/controller.py
 doLibrary ./src/controllerSimpleEvolution1.py
@@ -26,4 +27,5 @@ doLibrary ./src/minimax.py
 doLibrary ./src/controllerEvolution2.py
 doLibrary ./src/StateGenerator.py
 doLibrary ./src/nNetwork.py
+doLibrary ./src/controllerEvolution3.py
 # currently display.py is excluded
