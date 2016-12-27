@@ -24,8 +24,9 @@ INPUT_DATA_SIZE = EDGE_SIZE * (EDGE_SIZE // 2) * 3
 class AIEvolution3(Controller):
 
     def __init__(self, layersDimensions=[INPUT_DATA_SIZE, 20, 10, 1]):
-        self._nNetwork = NNetwork(layersDimensions, firstRandomDeviation=0.5)
-        self._nNetwork.setLearningRate(1.5)
+        self._nNetwork = NNetwork(
+            layersSizes=layersDimensions, firstRandomDeviation=0.1)
+        self._nNetwork.setLearningRate(0.1)
 
     def packInputData(self, game):
         data = []
@@ -96,31 +97,44 @@ class AIEvolution3(Controller):
         assert len(results) == len(inputDataList)
         assert type(inputDataList[0][0]) in (float, int)
         assert type(results[0][0]) == float
-        self._nNetwork.train(inputDataList, results)
+        ret = self._nNetwork.train(inputDataList, results)
 
         # this comment below is for DEBUGGING
         # if random.random() < 0.0001:
-        #    global curData, lastData
+        # if True:
+        if False:
+            global curData, lastData
 
-        #    games[0].printBoard(False)
-        #    print('results: ',results)
-        #    print('speculated: ', list(map(self.getBoardScore, games)))
-        #    print('current LR: ',self._nNetwork.getLearningRate())
-        #    print(self._nNetwork._data[2].get_value())
+            print('current learning rate: ', self._nNetwork.getLearningRate())
+            games[0].printBoard(False)
+            print('results: ', results)
+            print('speculated: ', list(map(self.getBoardScore, games)))
+            print('current LR: ', self._nNetwork.getLearningRate())
 
-        #    curData  = [d.get_value() for d in self._nNetwork._data]
-        #    if lastData != []:
-        #        print('data diff:')
-        #        for d1,d2 in zip(curData,lastData):
-        #            for r1,r2 in zip(d1,d2):
-        #                assert len(r1) == len(r2)
-        #                for f1,f2 in zip(r1,r2):
-        #                    if f1 != f2:
-        #                        print('it is different! ',f1, f2)
-        #    else:
-        #        print('there is no last data yet')
-        #    lastData = [d.get_value() for d in self._nNetwork._data]
-        #    input()
+            print('------ data full')
+            for i in range(len(self._nNetwork._data)):
+                print(self._nNetwork._data[i].get_value())
+            print('------ data full end')
+
+            print('------ bias full')
+            for i in range(len(self._nNetwork._bias)):
+                print(self._nNetwork._bias[i].get_value())
+            print('------ bias full end')
+
+            # curData  = [d.get_value() for d in self._nNetwork._data]
+            # if lastData != []:
+            #     print('data diff:')
+            #     for d1,d2 in zip(curData,lastData):
+            #         for r1,r2 in zip(d1,d2):
+            #             assert len(r1) == len(r2)
+            #             for f1,f2 in zip(r1,r2):
+            #                 if f1 != f2:
+            #                     print('it is different! ',f1, f2)
+            # else:
+            #     print('there is no last data yet')
+            # lastData = [d.get_value() for d in self._nNetwork._data]
+            input()
+        return ret
 
     def serialize(self, filename):
         assert 0, 'not implemented'

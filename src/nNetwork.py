@@ -34,25 +34,33 @@ class NNetwork:
         mx = T.dmatrix('mx')
         my = mx
 
-        activationFun = T.nnet.relu  # seems to work best of these 3
-        #activationFun = T.nnet.sigmoid
-        # activationFun = T.tanh # seems to be worst of these 3
+        activationFun = T.nnet.relu  # seems to work best
+        # activationFun = T.nnet.sigmoid
+        # activationFun = T.tanh # seems to be generally worse than relu
+        # activationFun = lambda x: x
+
+        # myList = [my]
         for i in range(len(ldi) - 2):
             my = activationFun(
                 T.dot(self._data[i], my) + T.reshape(self._bias[i], (ldi[i + 1], 1)))
+            # myList.append(my)
         my = (T.dot(self._data[-1], my) +
               T.reshape(self._bias[-1], (ldi[-1], 1)))
+        # myList.append(my)
 
         #my = activationFun( T.dot(self._data[0],my) + T.reshape(self._bias[0],(ldi[1],1)) )
         #my = activationFun( T.dot(self._data[1],my) + T.reshape(self._bias[1],(ldi[2],1)) )
         #my =              ( T.dot(self._data[2],my) + T.reshape(self._bias[2],(ldi[3],1)) )
 
+        # assert len(myList) == len(self._data)+1
         self._evaluate = function(
             [mx], my
         )
 
         mexpect = T.dmatrix('mexpect')
-        cost = T.mean(abs(my - mexpect))
+        cost = T.mean((my - mexpect) * (my - mexpect))
+        #cost = T.mean(my - mexpect)
+        #cost = T.mean(abs((my - mexpect)))
 
         self._learningRate = shared(0.05)
 

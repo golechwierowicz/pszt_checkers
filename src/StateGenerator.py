@@ -65,7 +65,7 @@ class LearningSetGenerator:
 
     def evalState(self, s):
         m = MiniMax(depth=self.depth)
-        return m.getBoardScore(s)
+        return min(max(m.getBoardScore(s), -12.0), 12.0)
 
     def __iter__(self):
         return ((s, self.evalState(s)) for s in StateGenerator(self.n))
