@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 '''
-FIXME: investigate why it won't learn
+Training scenario for AIEvolution3,
+neural network training with simple gradient method
 '''
 from scenarioEvolution1 import onePlusOne, initAI
 from StateGenerator import LearningSetGenerator
@@ -15,7 +16,7 @@ from plotUtils import Plot2Lines, PlotHistory
 
 def parseArguments():
     parser = argparse.ArgumentParser(
-        description='Teaching scenario for AIEvolution3. FIXME: investigate why it won\'t learn')
+        description='Teaching scenario for AIEvolution3.')
     parser.add_argument('-o', '--output', help='Output file for AI data',
                         dest='outputFile', required=False)
     parser.add_argument('-n', '--learning-set-size', help='Size of learning set to generate',
@@ -32,6 +33,9 @@ def parseArguments():
                         dest='learningRate', default=0.00115, type=float)
     parser.add_argument('-d', '--random-deviation', help='Deviation for randomizing begining NN data.',
                         dest='firstRandomDeviation', default=0.04, type=float)
+    parser.add_argument('-t', '--test-only',
+                        help='Only measure score of given AI, don\'t train it',
+                        dest='testOnly', action='store_true', default=False)
     return parser.parse_args()
 
 
@@ -48,6 +52,10 @@ def getLearningSet(n, depth=4):
 
 
 def checkScore(ai, args, data=LearningSetGenerator(10, depth=3)):
+    '''
+    Lower score, better ai
+    :rtype:float
+    '''
     #global plot1
 
     deltas = []
@@ -72,35 +80,71 @@ def checkScore(ai, args, data=LearningSetGenerator(10, depth=3)):
     #plot1.update(deltas, deltas)
     return sum(deltas) / len(deltas)
 
-if __name__ == "__main__":
+
+def main():
     args = parseArguments()
 
-    print('initializing AI, with learningRate=%f' % args.learningRate)
-    print('firstRandomDeviation=%f' % args.firstRandomDeviation)
-    ai = AIEvolution3(learningRate=args.learningRate,
-                      firstRandomDeviation=args.firstRandomDeviation)
+    if args.testOnly:
+        print('testing AI with given learning set')
+        assert args.inputFile != None
+        assert args.learningSetFilePath != None
+
+        print('loading AI from file:', args.inputFile)
+        ai = AIEvolution3()
+        ai.deserialize(args.inputFile)
+        print('loaded ai:', ai)
+        print('ai md5: ', ai.md5())
+
+        print('loading learning set from file:', args.learningSetFilePath)
+        states, scores = pickle.load(open(args.learningSetFilePath, 'rb'))
+        print('calculating medium cost')
+        print('score: ', checkScore(ai, args, data=zip(
+            states, scores)))
+        return
+
+    assert args.outputFile is not None
+
+    if args.inputFile == None:
+        print('initializing AI, with learningRate=%f' % args.learningRate)
+        print('firstRandomDeviation=%f' % args.firstRandomDeviation)
+        ai = AIEvolution3(learningRate=args.learningRate,
+                          firstRandomDeviation=args.firstRandomDeviation)
+    else:
+        print('loading AI from file:', args.inputFile)
+        ai = AIEvolution3()
+        ai.deserialize(args.inputFile)
+        print('loaded ai:', ai)
+        print('ai md5: ', ai.md5())
+
+        print('setting learningRate:', args.learningRate)
+        ai.setLearningRate(args.learningRate)
+
+    print('---------------------------')
 
     if args.learningSetFilePath == None:
         samplesCount = args.n
         depth = 3
         print('learning set not given.')
         print('generating %d samples, '
-              'with depth=%d ...' % (samplesCount, depth))
+              'with depth=%d ' % (samplesCount, depth))
         states, scores = getLearningSet(samplesCount, depth=depth)
     else:
+        print('loading learning set from file:', args.learningSetFilePath)
         states, scores = pickle.load(open(args.learningSetFilePath, 'rb'))
 
     assert len(states) == len(scores)
     assert type(states[0]) == Game
     assert type(scores[0]) == float
 
-    checkingStates, checkingScores = getLearningSet(100, depth=3)
-    # checkingStates, checkingScores = states, scores # for DEBUGGING
-    #checkingStates, checkingScores = states[0:200],scores[0:200]
+    validationSetSize = 100
+    print('generating validation set of size ', validationSetSize)
+    checkingStates, checkingScores = getLearningSet(validationSetSize, depth=3)
 
-    print('begin learning with learning set of size %d, '
+    print('beginning learning with learning set of size %d, '
           'and batchSize=%d.' % (len(states), args.batchSize))
     print('learning set will be repeated %d times.' % args.repeatTimes)
+
+    print('---------------------------')
 
     def chunks(container, chunkSize):
         zipIter = iter(container)
@@ -145,4 +189,17 @@ if __name__ == "__main__":
     print('learning finished')
     print('score on checking set: ', checkScore(ai, args, data=zip(
         checkingStates, checkingScores)))
+
+    print('saving ai to file:', args.outputFile)
+    print('ai md5: ', ai.md5())
+    ai.serialize(args.outputFile)
+
+    # for DEBUG
+    # ai = AIEvolution3().deserialize(args.outputFile)
+    # print('ai hash: ', hash(ai))
+
+    print('press any key to exit (make sure you did with plot what you wanted) ...')
     input()
+
+if __name__ == "__main__":
+    main()

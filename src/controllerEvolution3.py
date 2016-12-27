@@ -27,8 +27,20 @@ class AIEvolution3(Controller):
                  firstRandomDeviation=0.04, learningRate=0.00115):
         self._nNetwork = NNetwork(
             layersSizes=layersDimensions, firstRandomDeviation=firstRandomDeviation)
-        # self._nNetwork.setLearningRate(0.00015)
         self._nNetwork.setLearningRate(learningRate)
+
+    def __str__(self):
+        ret = 'AIEvolution3('
+        ret += 'learningRate=%f, ' % self._nNetwork.getLearningRate()
+        ret += 'layersSizes=%s, ' % str(self._nNetwork._layersSizes)
+        ret += ')'
+        return ret
+
+    def __hash__(self):
+        return hash(self._nNetwork)
+
+    def setLearningRate(self, value):
+        self._nNetwork.setLearningRate(value)
 
     def packInputData(self, game):
         data = []
@@ -139,9 +151,10 @@ class AIEvolution3(Controller):
         return ret
 
     def serialize(self, filename):
-        assert 0, 'not implemented'
-        #open(filename, 'w').write(str((self.layersDimensions, self.layers)))
+        self._nNetwork.dump(filename)
 
     def deserialize(self, filename):
-        assert 0, 'not implemented'
-        #self.layersDimensions, self.layers = eval(open(filename, 'r').read())
+        self._nNetwork.load(filename)
+
+    def md5(self):
+        return self._nNetwork.md5()

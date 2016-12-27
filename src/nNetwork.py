@@ -4,13 +4,16 @@ from theano import function, shared, pp
 import random
 import math
 
+import pickle
+import hashlib
+
 
 class NNetwork:
     '''
     Generic neural network.
     '''
 
-    def __init__(self, layersSizes, firstRandomDeviation=0.1):
+    def __init__(self, layersSizes, firstRandomDeviation=0.1, learningRate=0.05):
         '''
         :param layersSizes: list of layers sizes: [input, hidden1, ... , output]
         :type layersSizes: list of int
@@ -62,7 +65,7 @@ class NNetwork:
         #cost = T.mean(my - mexpect)
         #cost = T.mean(abs((my - mexpect)))
 
-        self._learningRate = shared(0.05)
+        self._learningRate = shared(learningRate)
 
         #delta = [0.01*a for a in T.grad(cost, self._data)]
         delta = [self._learningRate * T.grad(cost, d) for d in self._data]
@@ -133,3 +136,36 @@ class NNetwork:
 
     def getLearningRate(self):
         return self._learningRate.get_value()
+
+    def packToList(self):
+        ret = []
+        ret.append(self._layersSizes)
+        ret.append(float(self.getLearningRate()))
+        ret.append([d.get_value().tolist() for d in self._data])
+        ret.append([b.get_value().tolist() for b in self._bias])
+        return ret
+
+    def loadFromList(self, data):
+        assert len(data) == 4
+        layersSizes = data[0]
+        learningRate = data[1]
+        assert len(self._data) == len(self._bias)
+        for i in range(len(self._data)):
+            self._data[i].set_value(data[2][i])
+            self._bias[i].set_value(data[3][i])
+        self._layersSizes = layersSizes
+        self.setLearningRate(learningRate)
+
+    def dump(self, filename):
+        ret = self.packToList()
+        pickle.dump(ret, open(filename, 'wb'))
+
+    def load(self, filename):
+        data = pickle.load(open(filename, 'rb'))
+        self.loadFromList(data)
+
+    def md5(self):
+        data = self.packToList()
+        bytesData = pickle.dumps(data)
+        ret = hashlib.md5(bytesData).hexdigest()
+        return ret
