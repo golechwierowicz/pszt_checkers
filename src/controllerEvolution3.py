@@ -23,10 +23,12 @@ INPUT_DATA_SIZE = EDGE_SIZE * (EDGE_SIZE // 2) * 3
 
 class AIEvolution3(Controller):
 
-    def __init__(self, layersDimensions=[INPUT_DATA_SIZE, 20, 10, 1]):
+    def __init__(self, layersDimensions=[INPUT_DATA_SIZE, 80, 40, 1],
+                 firstRandomDeviation=0.04, learningRate=0.00115):
         self._nNetwork = NNetwork(
-            layersSizes=layersDimensions, firstRandomDeviation=0.1)
-        self._nNetwork.setLearningRate(0.1)
+            layersSizes=layersDimensions, firstRandomDeviation=firstRandomDeviation)
+        # self._nNetwork.setLearningRate(0.00015)
+        self._nNetwork.setLearningRate(learningRate)
 
     def packInputData(self, game):
         data = []

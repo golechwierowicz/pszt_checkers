@@ -63,6 +63,7 @@ def f(x):
 nn = NNetwork([1, 30, 50, 30, 1], firstRandomDeviation=0.2)
 lsg = LearningSetGenerator(f, batchSize=20)
 mp = MyPlot(nn, f)
+nn.setLearningRate(0.02)
 
 counter = 0
 print('begin learning ...')
