@@ -60,7 +60,7 @@ def f(x):
     arg = 12 * np.pi * x
     return math.sin(arg)
 
-nn = NNetwork([1, 30, 50, 30, 1])
+nn = NNetwork([1, 30, 50, 30, 1], firstRandomDeviation=0.2)
 lsg = LearningSetGenerator(f, batchSize=20)
 mp = MyPlot(nn, f)
 

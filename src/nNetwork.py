@@ -10,7 +10,7 @@ class NNetwork:
     Generic neural network.
     '''
 
-    def __init__(self, layersSizes):
+    def __init__(self, layersSizes, firstRandomDeviation=0.1):
         '''
         :param layersSizes: list of layers sizes: [input, hidden1, ... , output]
         :type layersSizes: list of int
@@ -18,10 +18,12 @@ class NNetwork:
         self._layersSizes = layersSizes
 
         def initMatrix(height, width):
-            return np.array([[random.gauss(0, 0.1) for col in range(width)]for row in range(height)])
+            return np.array([[random.gauss(0, firstRandomDeviation)
+                              for col in range(width)]for row in range(height)])
 
         def initVector(height):
-            return np.array([random.gauss(0, 0.1) for row in range(height)])
+            return np.array([random.gauss(0, firstRandomDeviation)
+                             for row in range(height)])
 
         ldi = self._layersSizes
         self._data = [shared(initMatrix(ldi[i + 1], ldi[i]))

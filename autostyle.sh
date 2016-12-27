@@ -17,6 +17,7 @@ doExecutable ./src/tests.py
 doExecutable ./src/convertAIData.py
 doExecutable ./src/nNetworkTest1.py
 doExecutable ./src/nNetworkTest2.py
+doExecutable ./src/generateLearningSet.py
 
 doLibrary ./src/controller.py
 doLibrary ./src/controllerSimpleEvolution1.py
