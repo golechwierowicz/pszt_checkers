@@ -36,6 +36,10 @@ def parseArguments():
     parser.add_argument('-t', '--test-only',
                         help='Only measure score of given AI, don\'t train it',
                         dest='testOnly', action='store_true', default=False)
+    parser.add_argument('-s', '--validation-set', help='Path to file with validation set',
+                        dest='validationSetPath', default=None)
+    parser.add_argument('-f', '--refresh-rate', help='Plot refresh rate',
+                        dest='viewRefreshRate', default=1050, type=int)
     return parser.parse_args()
 
 
@@ -85,7 +89,7 @@ def main():
     args = parseArguments()
 
     if args.testOnly:
-        print('testing AI with given learning set')
+        print('only testing AI with given learning set')
         assert args.inputFile != None
         assert args.learningSetFilePath != None
 
@@ -95,7 +99,8 @@ def main():
         print('loaded ai:', ai)
         print('ai md5: ', ai.md5())
 
-        print('loading learning set from file:', args.learningSetFilePath)
+        print('loading learning (testing) set from file:',
+              args.learningSetFilePath)
         states, scores = pickle.load(open(args.learningSetFilePath, 'rb'))
         print('calculating medium cost')
         print('score: ', checkScore(ai, args, data=zip(
@@ -136,12 +141,22 @@ def main():
     assert type(states[0]) == Game
     assert type(scores[0]) == float
 
-    validationSetSize = 100
-    print('generating validation set of size ', validationSetSize)
-    checkingStates, checkingScores = getLearningSet(validationSetSize, depth=3)
+    if args.validationSetPath is None:
+        print('validation set not given')
+        validationSetSize = 100
+        print('generating validation set of size ', validationSetSize)
+        checkingStates, checkingScores = getLearningSet(
+            validationSetSize, depth=3)
+    else:
+        print('loading validation set from file:', args.validationSetPath)
+        checkingStates, checkingScores = pickle.load(
+            open(args.validationSetPath, 'rb'))
+        assert len(checkingStates) == len(checkingScores)
+        validationSetSize = len(checkingStates)
 
     print('beginning learning with learning set of size %d, '
           'and batchSize=%d.' % (len(states), args.batchSize))
+    print('validation set size: ', validationSetSize)
     print('learning set will be repeated %d times.' % args.repeatTimes)
 
     print('---------------------------')
@@ -167,11 +182,11 @@ def main():
 
             cost = ai.train(b[0], b[1])
 
-            if counter % (1050 // args.batchSize) == 0:
-                print('after train cost:', cost)
+            if counter % (args.viewRefreshRate // args.batchSize) == 0:
+                #print('after train cost:', cost)
                 sc = (checkScore(ai, args, data=zip(
                     checkingStates, checkingScores)))
-                print('checked cost: ', sc)
+                #print('checked cost: ', sc)
                 historyPlot.entry([cost, sc])
             counter += 1
 
