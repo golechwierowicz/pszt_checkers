@@ -240,13 +240,25 @@ class Game:
         self.evolveCheckers()
 
     def getAppliedData(self, move):
+        '''
+        :return: board data after applying move, do not copy controllers
+        :rtype: list of list of (Checker or None)
+        '''
         ret = self.copyDataOnly()
         ret.applyMove(move)
+        assert type(ret) == list
+        assert type(ret[0]) == list
+        assert type(ret[0][0]) in (Checker, None)
         return ret.data
 
     def getAppliedBoard(self, move):
+        '''
+        :return: game after applying move, do not copy controllers
+        :rtype: Game
+        '''
         ret = self.copyDataOnly()
         ret.applyMove(move)
+        assert type(ret) == Game
         return ret
 
     # check if any checker reached end of the board
