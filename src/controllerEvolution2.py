@@ -86,9 +86,11 @@ class AIEvolution2(Controller):
 
         assert len(self._layers) == len(self._layersDimensions) - 1
         assert len(ret) == INPUT_DATA_SIZE
-        assert len(ret) == len(self._layers[0][0])
-        for l in self._layers:
+        assert len(ret) == self._layersDimensions[0]
+        for i, l in enumerate(self._layers):
             ret = matmul(l, ret)
+            ret = list(ret)
+            assert len(ret) == self._layersDimensions[i + 1]
 
         ret = list(ret)
         assert len(ret) == 1

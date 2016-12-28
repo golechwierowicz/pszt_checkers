@@ -114,7 +114,7 @@ def main():
         print('initializing AI, with learningRate=%f' % args.learningRate)
         print('firstRandomDeviation=%f' % args.firstRandomDeviation)
         ai = AINNetwork(learningRate=args.learningRate,
-                          firstRandomDeviation=args.firstRandomDeviation)
+                        firstRandomDeviation=args.firstRandomDeviation)
         print('ai layersSizes:', ai._nNetwork._layersSizes)
     else:
         print('loading AI from file:', args.inputFile)
