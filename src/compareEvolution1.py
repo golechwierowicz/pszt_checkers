@@ -39,11 +39,11 @@ if __name__ == '__main__':
         ai1 = AIEvolution2()
         assert args.inputFile != None
         ai1.deserialize(args.inputFile)
-    # elif args.aiType in ('AIEvolution3', '3'):
-    #    from controllerEvolution3 import AIEvolution3
-    #    ai1 = AIEvolution3()
-    #    assert args.inputFile != None
-    #    ai1.deserialize(args.inputFile)
+    elif args.aiType in ('AIEvolution3', '3'):
+        from controllerEvolution3 import AIEvolution3
+        ai1 = AIEvolution3()
+        assert args.inputFile != None
+        ai1.deserialize(args.inputFile)
     elif args.aiType == 'AITestingHybrid':
         ai1 = AITestingHybrid()
     elif args.aiType == 'minimax':

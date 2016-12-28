@@ -81,7 +81,7 @@ class AIEvolution3(Controller):
         ret = None
         curMin = float('inf')
         for pm in possibleMoves:
-            d = game.getAppliedData(pm)
+            d = game.getAppliedBoard(pm)
             sc = self.getBoardScore(d)
             if sc < curMin:
                 ret = pm
