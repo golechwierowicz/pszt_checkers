@@ -22,7 +22,7 @@ def matmul(a, b):
 INPUT_DATA_SIZE = EDGE_SIZE * (EDGE_SIZE // 2) * 5
 
 
-class AIEvolution3(Controller):
+class AINNetwork(Controller):
 
     def __init__(self, layersDimensions=[INPUT_DATA_SIZE, 80, 40, 40, 1],
                  firstRandomDeviation=0.04, learningRate=0.00115):
@@ -31,7 +31,7 @@ class AIEvolution3(Controller):
         self._nNetwork.setLearningRate(learningRate)
 
     def __str__(self):
-        ret = 'AIEvolution3('
+        ret = 'AINNetwork('
         ret += 'learningRate=%f, ' % self._nNetwork.getLearningRate()
         ret += 'layersSizes=%s, ' % str(self._nNetwork._layersSizes)
         ret += ')'

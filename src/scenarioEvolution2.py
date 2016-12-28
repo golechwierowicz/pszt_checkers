@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 '''
-Training scenario for AIEvolution3,
+Training scenario for AINNetwork,
 neural network training with simple gradient method
 '''
 from scenarioEvolution1 import onePlusOne, initAI
 from StateGenerator import LearningSetGenerator
 import argparse
-from controllerEvolution3 import AIEvolution3
+from controllerNNetwork import AINNetwork
 import pickle
 from rules import Game
 from itertools import chain
@@ -16,7 +16,7 @@ from plotUtils import Plot2Lines, PlotHistory
 
 def parseArguments():
     parser = argparse.ArgumentParser(
-        description='Teaching scenario for AIEvolution3.')
+        description='Teaching scenario for AINNetwork.')
     parser.add_argument('-o', '--output', help='Output file for AI data',
                         dest='outputFile', required=False)
     parser.add_argument('-n', '--learning-set-size', help='Size of learning set to generate',
@@ -94,7 +94,7 @@ def main():
         assert args.learningSetFilePath != None
 
         print('loading AI from file:', args.inputFile)
-        ai = AIEvolution3()
+        ai = AINNetwork()
         ai.deserialize(args.inputFile)
         print('loaded ai:', ai)
         print('ai md5: ', ai.md5())
@@ -113,12 +113,12 @@ def main():
     if args.inputFile == None:
         print('initializing AI, with learningRate=%f' % args.learningRate)
         print('firstRandomDeviation=%f' % args.firstRandomDeviation)
-        ai = AIEvolution3(learningRate=args.learningRate,
+        ai = AINNetwork(learningRate=args.learningRate,
                           firstRandomDeviation=args.firstRandomDeviation)
         print('ai layersSizes:', ai._nNetwork._layersSizes)
     else:
         print('loading AI from file:', args.inputFile)
-        ai = AIEvolution3()
+        ai = AINNetwork()
         ai.deserialize(args.inputFile)
         print('loaded ai:', ai)
         print('ai md5: ', ai.md5())
@@ -213,7 +213,7 @@ def main():
     ai.serialize(args.outputFile)
 
     # for DEBUG
-    # ai = AIEvolution3().deserialize(args.outputFile)
+    # ai = AINNetwork().deserialize(args.outputFile)
     # print('ai hash: ', hash(ai))
 
     print('press any key to exit (make sure you did with plot what you wanted) ...')

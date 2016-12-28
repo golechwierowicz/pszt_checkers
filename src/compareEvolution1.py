@@ -39,9 +39,9 @@ if __name__ == '__main__':
         ai1 = AIEvolution2()
         assert args.inputFile != None
         ai1.deserialize(args.inputFile)
-    elif args.aiType in ('AIEvolution3', '3'):
-        from controllerEvolution3 import AIEvolution3
-        ai1 = AIEvolution3()
+    elif args.aiType in ('AINNetwork', '3'):
+        from controllerNNetwork import AINNetwork
+        ai1 = AINNetwork()
         assert args.inputFile != None
         ai1.deserialize(args.inputFile)
     elif args.aiType == 'AITestingHybrid':
