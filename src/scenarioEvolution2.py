@@ -98,6 +98,7 @@ def main():
         ai.deserialize(args.inputFile)
         print('loaded ai:', ai)
         print('ai md5: ', ai.md5())
+        print('ai layersSizes:', ai._nNetwork._layersSizes)
 
         print('loading learning (testing) set from file:',
               args.learningSetFilePath)
@@ -114,12 +115,14 @@ def main():
         print('firstRandomDeviation=%f' % args.firstRandomDeviation)
         ai = AIEvolution3(learningRate=args.learningRate,
                           firstRandomDeviation=args.firstRandomDeviation)
+        print('ai layersSizes:', ai._nNetwork._layersSizes)
     else:
         print('loading AI from file:', args.inputFile)
         ai = AIEvolution3()
         ai.deserialize(args.inputFile)
         print('loaded ai:', ai)
         print('ai md5: ', ai.md5())
+        print('ai layersSizes:', ai._nNetwork._layersSizes)
 
         print('setting learningRate:', args.learningRate)
         ai.setLearningRate(args.learningRate)

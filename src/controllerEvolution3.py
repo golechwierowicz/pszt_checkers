@@ -18,7 +18,8 @@ def matmul(a, b):
              for col_b in zip(*b)) for row_a in a)
 
 
-INPUT_DATA_SIZE = EDGE_SIZE * (EDGE_SIZE // 2) * 3
+# INPUT_DATA_SIZE = EDGE_SIZE * (EDGE_SIZE // 2) * 3
+INPUT_DATA_SIZE = EDGE_SIZE * (EDGE_SIZE // 2) * 5
 
 
 class AIEvolution3(Controller):
@@ -55,13 +56,19 @@ class AIEvolution3(Controller):
                     d = game.data[EDGE_SIZE - 1 - r][EDGE_SIZE - 1 - c]
 
                 if d == None:
-                    data += [0.0, 0.0, 1.0]
+                    data += [0.0, 0.0, 1.0, 0.0, 0.0]
                 else:
                     if d.color == self.myColor:
-                        data += [0.0, 1.0, 0.0]
+                        if d.type == 0:
+                            data += [0.0, 1.0, 0.0, 0.0, 0.0]
+                        else:
+                            data += [0.0, 0.0, 0.0, 0.0, 1.0]
                     else:
-                        data += [1.0, 0.0, 0.0]
-        assert len(data) == EDGE_SIZE * (EDGE_SIZE // 2) * 3
+                        if d.type == 0:
+                            data += [1.0, 0.0, 0.0, 0.0, 0.0]
+                        else:
+                            data += [0.0, 0.0, 0.0, 1.0, 1.0]
+        assert len(data) == INPUT_DATA_SIZE
         return data
 
     def getBoardScore(self, game):
