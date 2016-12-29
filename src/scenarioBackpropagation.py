@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 '''
 Training scenario for AINNetwork,
-neural network training with simple gradient method
+neural network training with simple gradient backpropagation method
 '''
 from scenarioEvolution1 import onePlusOne, initAI
 from StateGenerator import LearningSetGenerator
@@ -16,7 +16,7 @@ from plotUtils import Plot2Lines, PlotHistory
 
 def parseArguments():
     parser = argparse.ArgumentParser(
-        description='Teaching scenario for AINNetwork.')
+        description='Training scenario for AINNetwork.')
     parser.add_argument('-o', '--output', help='Output file for AI data',
                         dest='outputFile', required=False)
     parser.add_argument('-n', '--learning-set-size', help='Size of learning set to generate',
