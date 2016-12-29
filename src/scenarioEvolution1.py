@@ -2,6 +2,8 @@
 
 from controllerSimpleEvolution1 import AISimpleEvolution1
 from controllerEvolution2 import AIEvolution2
+from controllerEvolutionProp import AIEvolutionProp
+
 from controller import AIRandom, Controller
 from controllerTestingHybrid import AITestingHybrid
 from rules import Game
@@ -111,6 +113,10 @@ def initAI(args, inputFile=None):
             ai.deserialize(inputFile)
     elif args.aiType in ('AIEvolution2', '2'):
         ai = AIEvolution2()
+        if inputFile != None:
+            ai.deserialize(inputFile)
+    elif args.aiType in ('AIEvolutionProp', '4', 'prop'):
+        ai = AIEvolutionProp()
         if inputFile != None:
             ai.deserialize(inputFile)
     else:

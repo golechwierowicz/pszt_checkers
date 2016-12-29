@@ -2,6 +2,8 @@
 from controller import AIRandom
 from controllerSimpleEvolution1 import AISimpleEvolution1
 from controllerEvolution2 import AIEvolution2
+from controllerEvolutionProp import AIEvolutionProp
+
 from controllerTestingHybrid import AITestingHybrid
 from minimax import MiniMax
 from rules import Game
@@ -42,6 +44,10 @@ if __name__ == '__main__':
     elif args.aiType in ('AINNetwork', '3'):
         from controllerNNetwork import AINNetwork
         ai1 = AINNetwork()
+        assert args.inputFile != None
+        ai1.deserialize(args.inputFile)
+    elif args.aiType in ('AIEvolutionProp', '4', 'prop'):
+        ai1 = AIEvolutionProp()
         assert args.inputFile != None
         ai1.deserialize(args.inputFile)
     elif args.aiType == 'AITestingHybrid':

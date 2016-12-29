@@ -29,4 +29,6 @@ doLibrary ./src/StateGenerator.py
 doLibrary ./src/nNetwork.py
 doLibrary ./src/controllerNNetwork.py
 doLibrary ./src/plotUtils.py
+doLibrary ./src/controllerEvolutionProp.py
+doLibrary ./src/property.py
 # currently display.py is excluded
