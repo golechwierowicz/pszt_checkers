@@ -24,11 +24,11 @@ def parseArguments():
                         dest='n', default=3000, type=int)
     parser.add_argument('-t', '--type', help='Testing AI type',
                         dest='aiType', default='AIEvolution2')
+    parser.add_argument('-o', '--opponent', help='Opponent for testing',
+                        dest='opponent', default='AIRandom')
     return parser.parse_args()
 
 if __name__ == '__main__':
-    print("Comparing given AI with random choices...")
-
     args = parseArguments()
 
     if args.aiType in ('AISimpleEvolution1', '1'):
@@ -50,9 +50,17 @@ if __name__ == '__main__':
         ai1 = MiniMax()
     else:
         raise BaseException('unknown ai type')
-    print('Given AI:', args.aiType)
 
-    ai2 = AIRandom()
+    if args.opponent in ('AITestingHybrid', 'hybrid'):
+        ai2 = AITestingHybrid()
+    elif args.opponent in ('AIRandom', 'random'):
+        ai2 = AIRandom()
+    else:
+        raise BaseException('unknown ai type')
+
+    print("Comparing:")
+    print('Given AI:', args.aiType)
+    print('Opponent: ', args.opponent)
 
     # number of games
     n = args.n
