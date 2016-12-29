@@ -149,6 +149,7 @@ class NNetwork:
         assert len(data) == 4
         layersSizes = data[0]
         learningRate = data[1]
+        self.__init__(layersSizes=layersSizes, learningRate=learningRate)
         assert len(self._data) == len(self._bias)
         for i in range(len(self._data)):
             self._data[i].set_value(data[2][i])

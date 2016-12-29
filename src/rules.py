@@ -246,10 +246,11 @@ class Game:
         '''
         ret = self.copyDataOnly()
         ret.applyMove(move)
+        ret = ret.data
         assert type(ret) == list
         assert type(ret[0]) == list
-        assert type(ret[0][0]) in (Checker, None)
-        return ret.data
+        assert type(ret[0][0]) in (Checker, type(None))
+        return ret
 
     def getAppliedBoard(self, move):
         '''
