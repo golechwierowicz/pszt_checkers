@@ -31,4 +31,5 @@ doLibrary ./src/controllerNNetwork.py
 doLibrary ./src/plotUtils.py
 doLibrary ./src/controllerEvolutionProp.py
 doLibrary ./src/property.py
+doLibrary ./src/aiInfo.py
 # currently display.py is excluded

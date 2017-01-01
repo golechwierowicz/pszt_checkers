@@ -49,6 +49,14 @@ class MiniMax(Controller):
     def evaluate(self, game):
         return self.evaluate2(game)
 
+    def getBoardScoreDelta(self, game):
+        '''
+        How much this state can be improved in future moves
+        '''
+        self.player = game.currentPlayer
+        ret = self.maxi(game, self.depth)[0]
+        return ret - self.evaluate2(game)
+
     def evaluate1(self, game):
         """
         Simple heuristic evalutation,

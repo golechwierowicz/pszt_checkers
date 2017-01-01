@@ -35,14 +35,14 @@ class StateGenerator:
     """
 
     def __init__(self, n):
-        self.ai1 = AIRandom()
-        self.ai2 = AIRandom()
-        self.n = n
+        self._ai1 = AIRandom()
+        self._ai2 = AIRandom()
+        self._n = n
 
         states = []
 
         while(len(states) < n):
-            g = Game(self.ai1, self.ai2)
+            g = Game(self._ai1, self._ai2)
             s = []
             while not g.finished():
                 g.nextMove()
@@ -54,18 +54,22 @@ class StateGenerator:
 
     def __iter__(self):
         random.shuffle(self.states)
-        return islice(self.states, 0, self.n)
+        return islice(self.states, 0, self._n)
 
 
 class LearningSetGenerator:
 
-    def __init__(self, n, depth=5):
-        self.n = n
-        self.depth = depth
+    def __init__(self, n, depth=5, useDelta=False):
+        self._n = n
+        self._depth = depth
+        self._useDelta = useDelta
 
-    def evalState(self, s):
-        m = MiniMax(depth=self.depth)
-        return min(max(m.getBoardScore(s), -12.0), 12.0)
+    def _evalState(self, s):
+        m = MiniMax(depth=self._depth)
+        if self._useDelta:
+            return min(max(m.getBoardScoreDelta(s), -12.0), 12.0)
+        else:
+            return min(max(m.getBoardScore(s), -12.0), 12.0)
 
     def __iter__(self):
-        return ((s, self.evalState(s)) for s in StateGenerator(self.n))
+        return ((s, self._evalState(s)) for s in StateGenerator(self._n))

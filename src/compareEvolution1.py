@@ -1,11 +1,6 @@
 #!/bin/env pypy3
-from controller import AIRandom
-from controllerSimpleEvolution1 import AISimpleEvolution1
-from controllerEvolution2 import AIEvolution2
-from controllerEvolutionProp import AIEvolutionProp
 
-from controllerTestingHybrid import AITestingHybrid
-from minimax import MiniMax
+from aiInfo import initAI
 from rules import Game
 import argparse
 
@@ -33,40 +28,11 @@ def parseArguments():
 if __name__ == '__main__':
     args = parseArguments()
 
-    if args.aiType in ('AISimpleEvolution1', '1'):
-        ai1 = AISimpleEvolution1()
-        assert args.inputFile != None
-        ai1.deserialize(args.inputFile)
-    elif args.aiType in ('AIEvolution2', '2'):
-        ai1 = AIEvolution2()
-        assert args.inputFile != None
-        ai1.deserialize(args.inputFile)
-    elif args.aiType in ('AINNetwork', '3'):
-        from controllerNNetwork import AINNetwork
-        ai1 = AINNetwork()
-        assert args.inputFile != None
-        ai1.deserialize(args.inputFile)
-    elif args.aiType in ('AIEvolutionProp', '4', 'prop'):
-        ai1 = AIEvolutionProp()
-        assert args.inputFile != None
-        ai1.deserialize(args.inputFile)
-    elif args.aiType == 'AITestingHybrid':
-        ai1 = AITestingHybrid()
-    elif args.aiType == 'minimax':
-        ai1 = MiniMax()
-    else:
-        raise BaseException('unknown ai type')
-
-    if args.opponent in ('AITestingHybrid', 'hybrid'):
-        ai2 = AITestingHybrid()
-    elif args.opponent in ('AIRandom', 'random'):
-        ai2 = AIRandom()
-    else:
-        raise BaseException('unknown ai type')
-
     print("Comparing:")
-    print('Given AI:', args.aiType)
-    print('Opponent: ', args.opponent)
+    print('Given AI:')
+    ai1 = initAI(args.aiType, args.inputFile, mustLoad=True)
+    print('Opponent:')
+    ai2 = initAI(args.opponent)
 
     # number of games
     n = args.n

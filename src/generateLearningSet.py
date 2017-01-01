@@ -15,12 +15,15 @@ def parseArguments():
                         dest='n', default=1000, type=int)
     parser.add_argument('-d', '--depth', help='Depth of minimax recursion',
                         dest='depth', default=3, type=int)
+    parser.add_argument('--delta', help='Use minimax getBoardScoreDelta method for evaluating states',
+                        dest='scoreDelta', action='store_true', default=False)
     return parser.parse_args()
 
 if __name__ == '__main__':
     args = parseArguments()
 
-    lsg = LearningSetGenerator(n=args.n, depth=args.depth)
+    lsg = LearningSetGenerator(
+        n=args.n, depth=args.depth, useDelta=args.scoreDelta)
 
     print('generating %d samples, '
           'with depth=%d to file: %s ...' % (args.n, args.depth, args.outputFile))
@@ -30,5 +33,11 @@ if __name__ == '__main__':
     for st, sc in lsg:
         states.append(st)
         scores.append(sc)
+
+        # for DEBUG
+        # print('------------')
+        # st.printBoard(False)
+        # print('score: ', sc)
+        # input()
 
     pickle.dump((states, scores), open(args.outputFile, 'wb'))

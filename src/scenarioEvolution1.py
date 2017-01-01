@@ -1,9 +1,6 @@
 #!/bin/env pypy3
 
-from controllerSimpleEvolution1 import AISimpleEvolution1
-from controllerEvolution2 import AIEvolution2
-from controllerEvolutionProp import AIEvolutionProp
-
+from aiInfo import initAI
 from controller import AIRandom, Controller
 from controllerTestingHybrid import AITestingHybrid
 from rules import Game
@@ -105,25 +102,6 @@ def parseArguments():
     return parser.parse_args()
 
 
-def initAI(args, inputFile=None):
-    # which AI we will evolve
-    if args.aiType in ('AISimpleEvolution1', '1'):
-        ai = AISimpleEvolution1()
-        if inputFile != None:
-            ai.deserialize(inputFile)
-    elif args.aiType in ('AIEvolution2', '2'):
-        ai = AIEvolution2()
-        if inputFile != None:
-            ai.deserialize(inputFile)
-    elif args.aiType in ('AIEvolutionProp', '4', 'prop'):
-        ai = AIEvolutionProp()
-        if inputFile != None:
-            ai.deserialize(inputFile)
-    else:
-        raise Exception('unknown ai type')
-    return ai
-
-
 def onePlusOne(ai, checkScoreFun, args):
     try:
         bestScore = checkScoreFun(ai, args)
@@ -190,11 +168,11 @@ def muPlusLambda(checkScoreFun, args):
             print('loading population of size: ', args.mu)
             print('using files:', args.inputFile +
                   '[0-' + str(args.mu - 1) + ']')
-            population = [initAI(args, args.inputFile + str(i))
+            population = [initAI(args.aiType, args.inputFile + str(i))
                           for i in range(args.mu)]
         else:
             print('initializing population of size: ', args.mu)
-            ai = initAI(args, args.inputFile)
+            ai = initAI(args.aiType, args.inputFile)
             aiType = type(ai)
             lam = args.lambd
             population = [aiType() for u in range(args.mu)]
@@ -251,7 +229,6 @@ def muPlusLambda(checkScoreFun, args):
 if __name__ == '__main__':
     args = parseArguments()
 
-    print('Given AI:', args.aiType)
     if args.randomChoiceOpponent:
         print('Opponent: AIRandom')
     else:
@@ -259,7 +236,7 @@ if __name__ == '__main__':
 
     if args.algorithm in ('onePlusOne', '1'):
         print('using 1+1 algorithm')
-        ai = initAI(args, args.inputFile)
+        ai = initAI(args.aiType, args.inputFile)
         onePlusOne(ai, checkScore, args)
     elif args.algorithm in ('muPlusLambda', '2'):
         print('using mu+lambda algorithm with mu=%d, lambda=%d' %
