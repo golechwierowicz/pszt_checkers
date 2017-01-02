@@ -27,6 +27,13 @@ def playGame(ai1, ai2):
     # window.run()
 
     g = Game(ai1, ai2)
+
+    # for DEBUG
+    # import pickle
+    # g = pickle.load(open('qwe','rb'))
+    # g.controller1 = ai1
+    # g.controller2 = ai2
+
     g.printBoard()
     while not g.finished():
         q.put(g.getBoard())

@@ -38,6 +38,10 @@ if __name__ == '__main__':
         # print('------------')
         # st.printBoard(False)
         # print('score: ', sc)
-        # input()
+        # with open('qwe','wb') as fi:
+        #     pickle.dump(st, fi)
+        # qwe = input()
+        # if qwe=='q':
+        #     break
 
     pickle.dump((states, scores), open(args.outputFile, 'wb'))

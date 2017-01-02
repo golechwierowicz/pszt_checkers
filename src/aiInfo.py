@@ -6,10 +6,10 @@ from controllerTestingHybrid import AITestingHybrid
 from minimax import MiniMax
 
 try:
-   from controllerNNetwork import AINNetwork
-   NNETWORK_ENABLED = True
+    from controllerNNetwork import AINNetwork
+    NNETWORK_ENABLED = True
 except:
-   NNETWORK_ENABLED = False
+    NNETWORK_ENABLED = False
 
 AI_NAMES = {
     AIRandom: ('AIRandom', 'random', '0'),

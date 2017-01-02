@@ -149,6 +149,9 @@ class Game:
                         found = False
                         while(insideBoard(beatenPos)):
                             d = data[beatenPos.r][beatenPos.c]
+                            if d != None and d.color == self.currentPlayer:
+                                # cannot jump over own checker
+                                break
                             if d != None and d.color != self.currentPlayer:
                                 found = True
                                 break
