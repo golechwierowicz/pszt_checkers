@@ -1,7 +1,6 @@
 #!/bin/env pypy3
-from controller import AIRandom
-from controllerSimpleEvolution1 import AISimpleEvolution1
-from minimax import MiniMax
+
+from aiInfo import initAI
 from rules import Game
 import argparse
 
@@ -21,30 +20,23 @@ def parseArguments():
     parser.add_argument('-n', '--number-of-games', help='Number of played test games',
                         dest='n', default=3000, type=int)
     parser.add_argument('-t', '--type', help='Testing AI type',
-                        dest='aiType', default='controllerSimpleEvolution1')
+                        dest='aiType', default='AIEvolution2')
+    parser.add_argument('-o', '--opponent', help='Opponent for testing',
+                        dest='opponent', default='AIRandom')
     return parser.parse_args()
 
 if __name__ == '__main__':
-    print("Comparing given AI with random choices...")
-
     args = parseArguments()
 
-    if args.aiType == 'controllerSimpleEvolution1':
-        print('Given AI: controllerSimpleEvolution1')
-        ai1 = AISimpleEvolution1()
-        assert args.inputFile != None
-        ai1.deserialize(args.inputFile)
-    elif args.aiType == 'minimax':
-        print('Given AI: minimax')
-        ai1 = MiniMax()
-    else:
-        raise 'given AI type is unknown'
-
-    ai2 = AIRandom()
+    print("Comparing:")
+    print('Given AI:')
+    ai1 = initAI(args.aiType, args.inputFile, mustLoad=True)
+    print('Opponent:')
+    ai2 = initAI(args.opponent)
 
     # number of games
     n = args.n
-    winCounter = [0, 0]
+    winCounter = [0, 0, 0]
     for a in range(n // 2):
         w = playGame(ai1, ai2)
         winCounter[w] += 1
@@ -56,3 +48,5 @@ if __name__ == '__main__':
         print("PERFECT !")
     else:
         print('result: ', winCounter[0] / n)
+
+    print('draw ratio:', winCounter[2] / n)

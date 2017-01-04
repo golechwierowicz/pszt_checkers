@@ -33,6 +33,7 @@ class Game:
                      for b in range(EDGE_SIZE)]
 
         self.roundCounter = 0
+        self.infiniteGame = False
 
         # place starting checkers
         for r in range(HOW_MANY_ROWS_OF_CHECKERS):
@@ -42,11 +43,22 @@ class Game:
                 r1 = EDGE_SIZE - 1 - r
                 self.data[r1][c] = Checker(1, 0)
 
+    def __repr__(self):
+        return 'Game()'
+
     def copyDataOnly(self):
         # don't copy controllers
         newone = type(self)(None, None)
         newone.data = [d.copy() for d in self.data]
         newone.currentPlayer = self.currentPlayer
+        return newone
+
+    def copy(self):
+        newone = self.copyDataOnly()
+        newone.controller1 = self.controller1
+        newone.controller2 = self.controller2
+        newone.roundCounter = self.roundCounter
+        newone.infiniteGame = self.infiniteGame
         return newone
 
     def getBoard(self):
@@ -137,6 +149,9 @@ class Game:
                         found = False
                         while(insideBoard(beatenPos)):
                             d = data[beatenPos.r][beatenPos.c]
+                            if d != None and d.color == self.currentPlayer:
+                                # cannot jump over own checker
+                                break
                             if d != None and d.color != self.currentPlayer:
                                 found = True
                                 break
@@ -213,12 +228,11 @@ class Game:
         data = self.data
         for ch in move.removedCheckers:
             assert data[ch[0]][ch[1]] != None
-            # TODO: check assert below
-            # assert data[ch[0]][ch[1]].color == not self.currentPlayer
+            assert data[ch[0]][ch[1]].color == (not self.currentPlayer)
+
             data[ch[0]][ch[1]] = None
         assert data[p1[0]][p1[1]] != None
-        # TODO: check assert below
-        #assert data[p1[0]][p1[1]].color == self.currentPlayer
+        assert data[p1[0]][p1[1]].color == self.currentPlayer
         assert data[p2[0]][p2[1]] == None
         data[p2[0]][p2[1]] = data[p1[0]][p1[1]]
         data[p1[0]][p1[1]] = None
@@ -226,14 +240,29 @@ class Game:
         # changing current player is connected with applyMove
         self.currentPlayer = not self.currentPlayer
 
+        self.evolveCheckers()
+
     def getAppliedData(self, move):
+        '''
+        :return: board data after applying move, do not copy controllers
+        :rtype: list of list of (Checker or None)
+        '''
         ret = self.copyDataOnly()
         ret.applyMove(move)
-        return ret.data
+        ret = ret.data
+        assert type(ret) == list
+        assert type(ret[0]) == list
+        assert type(ret[0][0]) in (Checker, type(None))
+        return ret
 
     def getAppliedBoard(self, move):
+        '''
+        :return: game after applying move, do not copy controllers
+        :rtype: Game
+        '''
         ret = self.copyDataOnly()
         ret.applyMove(move)
+        assert type(ret) == Game
         return ret
 
     # check if any checker reached end of the board
@@ -260,16 +289,16 @@ class Game:
                 self, possibleMoves)
         assert nextMove in possibleMoves
         self.applyMove(nextMove)
-        self.evolveCheckers()
         self.roundCounter += 1
         if self.roundCounter == 5000:
             print("Detected infinite game!")
             self.printBoard()
+            self.infiniteGame = True
 
     def finished(self):
-        # TODO: implement draw (for example if game leasts too long)
-        # or AI will not be wise enough?
-        return len(self.getPossibleMoves()) == 0
+        return len(self.getPossibleMoves()) == 0 or self.infiniteGame
 
     def getWinner(self):
+        if self.infiniteGame:
+            return 2
         return not self.currentPlayer

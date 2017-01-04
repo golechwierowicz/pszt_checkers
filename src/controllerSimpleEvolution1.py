@@ -7,15 +7,16 @@ import copy
 class AISimpleEvolution1(Controller):
 
     def __init__(self):
-        self.coefs = [[[random.random()
+        self.coefs = [[[random.gauss(0, 1) if (r + c) % 2 == 0 else 0
                         for col in range(3)]
                        for c in range(EDGE_SIZE)]
                       for r in range(EDGE_SIZE)]
         # coefs[row][collumn][color] - color==2 means that there is no checker
 
     def calcScore(self, data):
-        # think if I want my opponent to has such state.
-        # Bigger ret means that I want it more.
+        """
+        How much I want my opponent to has such state.
+        """
         ret = 0
         for r in range(EDGE_SIZE):
             for c in range(EDGE_SIZE):
@@ -52,17 +53,15 @@ class AISimpleEvolution1(Controller):
         return newone
 
     def mutate(self):
+        counter = 0
         for r in range(EDGE_SIZE):
             for c in range(EDGE_SIZE):
                 if (r + c) % 2 != 0:
                     continue
-                if random.random() < 0.6:
-                    continue
                 for col in range(3):
-                    if random.random() < 0.9:
-                        self.coefs[r][c][col] += 6 * (0.51 - random.random())
-                    else:
-                        self.coefs[r][c][col] *= 6 * (0.7 - random.random())
+                    self.coefs[r][c][col] += random.gauss(0, 1)
+                    counter += 1
+        assert counter == EDGE_SIZE * (EDGE_SIZE // 2) * 3
 
     def serialize(self, filename):
         open(filename, 'w').write(str(self.coefs))

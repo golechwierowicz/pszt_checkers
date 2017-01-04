@@ -4,16 +4,20 @@ from rules import Game
 
 class MiniMax(Controller):
 
-    def __init__(self):
-        self.DEPTH = 3
+    def __init__(self, depth=3):
+        self.depth = depth
         self.player = None
 
     def decideNextMove(self, board, possibleMoves):
         assert len(possibleMoves) > 0
         self.player = board.currentPlayer
         # get best move, other elem of tuple is score
-        best_move = self.maxi(board, self.DEPTH)[1]
+        best_move = self.maxi(board, self.depth)[1]
         return best_move
+
+    def getBoardScore(self, board):
+        self.player = board.currentPlayer
+        return self.maxi(board, self.depth)[0]
 
     def mini(self, board, depth):
         if(depth <= 0):
@@ -43,6 +47,21 @@ class MiniMax(Controller):
         return (best_score, best_move)
 
     def evaluate(self, game):
+        return self.evaluate2(game)
+
+    def getBoardScoreDelta(self, game):
+        '''
+        How much this state can be improved in future moves
+        '''
+        self.player = game.currentPlayer
+        ret = self.maxi(game, self.depth)[0]
+        return ret - self.evaluate2(game)
+
+    def evaluate1(self, game):
+        """
+        Simple heuristic evalutation,
+        Just count checkers
+        """
         board = game.data
         white_players = 0
         black_players = 0
@@ -59,3 +78,24 @@ class MiniMax(Controller):
             return black_players - white_players
         else:
             raise "Current player must be either black or white"
+
+    def evaluate2(self, game):
+        """
+        Simple heuristic evalutation,
+        Count checkers with weights depending on checker type
+        (normal or queen)
+        """
+        board = game.data
+        score = [0.0, 0.0]  # score for each color
+        for row in board:
+            for p in row:
+                if p == None:
+                    continue
+                score[p.color] += (1 if p.type == 0 else 2.1)
+
+        we = self.player
+        assert we in (0, 1)
+        if(we == 0):
+            return score[0] - score[1]
+        elif(we == 1):
+            return score[1] - score[0]
