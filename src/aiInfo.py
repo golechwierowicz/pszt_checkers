@@ -15,12 +15,12 @@ AI_NAMES = {
     AIRandom: ('AIRandom', 'random', '0'),
     AISimpleEvolution1: ('AISimpleEvolution1', 'simple', '1', 'evolution1'),
     AIEvolution2: ('AIEvolution2', '2', 'evolution2'),
-    AIEvolutionProp: ('AIEvolutionProp', '4', 'evolutionProp'),
-    MiniMax: ('MiniMax', 'minmax'),
+    AIEvolutionProp: ('AIEvolutionProp', '4', 'evolutionProp', 'property', 'prop'),
+    MiniMax: ('MiniMax', 'minmax', 'mm'),
     AITestingHybrid: ('AITestingHybrid', 'hybrid'),
 }
 if NNETWORK_ENABLED:
-    AI_NAMES[AINNetwork] = ('AINNetwork', '3', 'nnetwork')
+    AI_NAMES[AINNetwork] = ('AINNetwork', '3', 'nnetwork', 'nn')
 
 AI_CLASSES = {name.lower(): aiClass for aiClass, names in AI_NAMES.items()
               for name in names}

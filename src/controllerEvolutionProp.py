@@ -3,6 +3,8 @@ import random
 from controller import Controller
 from math import tanh
 from property import PropertyMyCheckersDistance
+from property import PropertyMyCheckersRadius
+from property import PropertyMyCheckersCloseness
 import pickle
 
 
@@ -13,22 +15,23 @@ class AIEvolutionProp(Controller):
         self._props = []
         self._coefs = []
 
-        fun = lambda x: sum(x) / len(x)
-        self._props.append(PropertyMyCheckersDistance(fun, 'meanDistance'))
-        self._coefs.append(random.gauss(0, 1))
+        funs = [
+            ('mean', lambda x: sum(x) / len(x)),
+            ('max', lambda x: max(x)),
+            ('min', lambda x: min(x)),
+            ('meanSquared', lambda x: sum(map(lambda x: x * x, x)) / len(x)),
+        ]
 
-        fun = lambda x: max(x)
-        self._props.append(PropertyMyCheckersDistance(fun, 'maxDistance'))
-        self._coefs.append(random.gauss(0, 1))
-
-        fun = lambda x: min(x)
-        self._props.append(PropertyMyCheckersDistance(fun, 'minDistance'))
-        self._coefs.append(random.gauss(0, 1))
-
-        fun = lambda x: sum(map(lambda x: x * x, x)) / len(x)
-        self._props.append(PropertyMyCheckersDistance(
-            fun, 'meanDistanceSquare'))
-        self._coefs.append(random.gauss(0, 1))
+        for funName, fun in funs:
+            self._props.append(PropertyMyCheckersDistance(
+                fun, funName + 'Distance'))
+            self._coefs.append(random.gauss(0, 1))
+            self._props.append(
+                PropertyMyCheckersRadius(fun, funName + 'Radius'))
+            self._coefs.append(random.gauss(0, 1))
+            self._props.append(PropertyMyCheckersCloseness(
+                fun, funName + 'Closeness'))
+            self._coefs.append(random.gauss(0, 1))
 
         # TODO: more properties
         # TODO: add standard deviations vector
@@ -36,17 +39,19 @@ class AIEvolutionProp(Controller):
     def _calcScore(self, game):
         '''
         How much I want my opponent to be in given state
+        :rtype: float
         '''
         # for DEBUG
         # if random.random() < 0.0001:
-        # #if False:
-        #     print('------------------------------------------------')
-        #     game.printBoard(False)
-        #     print('my color: ', 'B' if not game.currentPlayer else 'B')
-        #     for prop, co in zip(self._props, self._coefs):
-        #         print('prop name:', prop.name)
-        #         print('prop value:', prop.evaluate(game))
-        #     input()
+        if False:
+            print('------------------------------------------------')
+            game.printBoard(False)
+            print('my color: ', 'B' if not game.currentPlayer else 'B')
+            for prop, co in zip(self._props, self._coefs):
+                print('prop name:', prop.name)
+                print('prop value:', prop.evaluate(game))
+                print('prop coef:', co)
+            input()
 
         ret = 0
         # TODO: maybe try sometching different than simple linear combination?

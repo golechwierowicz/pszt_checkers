@@ -1,4 +1,6 @@
 from rules import EDGE_SIZE
+from math import sqrt
+import itertools
 
 
 def getMyPointOfView(game):
@@ -80,6 +82,119 @@ class PropertyMyCheckersDistance(Property):
                 d = board[r][c]
                 if d is not None and d.color == myColor:
                     ret.append(r)
+        return self._fun(ret)
+
+    def copy(self):
+        return type(self)(self._fun, self._name)
+
+
+class PropertyMyCheckersRadius(Property):
+
+    def __init__(self, fun, name):
+        '''
+        :param fun: see evaluate method
+        '''
+        super().__init__(name)
+        self._fun = fun
+
+    def evaluate(self, game):
+        '''
+        Returns value of self._fun with list of distances
+        of my checkers from the center of the board
+
+        :return: self._fun(list of float)
+        :rtype: float
+        '''
+        ret = []
+        myColor = not game.currentPlayer
+        board = getMyPointOfView(game)
+        for r in range(EDGE_SIZE):
+            for c in range(EDGE_SIZE):
+                if (r + c) % 2 != 0:
+                    assert board[r][c] is None
+                    continue
+                d = board[r][c]
+                if d is not None and d.color == myColor:
+                    ret.append(sqrt((EDGE_SIZE / 2 - r) **
+                                    2 + (EDGE_SIZE / 2 - c)**2))
+        return self._fun(ret)
+
+    def copy(self):
+        return type(self)(self._fun, self._name)
+
+
+class PropertyMyCheckersRadius(Property):
+
+    def __init__(self, fun, name):
+        '''
+        :param fun: see evaluate method
+        '''
+        super().__init__(name)
+        self._fun = fun
+
+    def evaluate(self, game):
+        '''
+        Returns value of self._fun with list of distances
+        of my checkers from the center of the board
+
+        :return: self._fun(list of float)
+        :rtype: float
+        '''
+        ret = []
+        myColor = not game.currentPlayer
+        board = getMyPointOfView(game)
+        for r in range(EDGE_SIZE):
+            for c in range(EDGE_SIZE):
+                if (r + c) % 2 != 0:
+                    assert board[r][c] is None
+                    continue
+                d = board[r][c]
+                if d is not None and d.color == myColor:
+                    ret.append(sqrt((EDGE_SIZE / 2 - r) **
+                                    2 + (EDGE_SIZE / 2 - c)**2))
+        return self._fun(ret)
+
+    def copy(self):
+        return type(self)(self._fun, self._name)
+
+
+class PropertyMyCheckersCloseness(Property):
+
+    def __init__(self, fun, name):
+        '''
+        :param fun: see evaluate method
+        '''
+        super().__init__(name)
+        self._fun = fun
+
+    def evaluate(self, game):
+        '''
+        Returns value of self._fun with list of distances
+        of my checkers from the center of the board
+
+        :return: self._fun(list of float)
+        :rtype: float
+        '''
+        ret = []
+        myColor = not game.currentPlayer
+        board = getMyPointOfView(game)
+        for r in range(EDGE_SIZE):
+            for c in range(EDGE_SIZE):
+                if (r + c) % 2 != 0:
+                    assert board[r][c] is None
+                    continue
+                d = board[r][c]
+                if d is not None and d.color == myColor:
+                    counter = 0
+                    for dr, dc in itertools.product((-1, 1), (-1, 1)):
+                        newR = r + dr
+                        newC = c + dc
+                        if not (0 <= newR < EDGE_SIZE and 0 <= newC < EDGE_SIZE):
+                            continue
+                        newD = board[newR][newC]
+                        if newD is not None and newD.color == myColor:
+                            counter += 1
+                    ret.append(counter)
         return self._fun(ret)
 
     def copy(self):
