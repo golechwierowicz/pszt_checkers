@@ -1,7 +1,7 @@
 from rules import EDGE_SIZE
 import random
 from controller import Controller
-from math import tanh
+from math import tanh, sqrt, exp
 from property import PropertyMyCheckersDistance
 from property import PropertyMyCheckersRadius
 from property import PropertyMyCheckersCloseness
@@ -14,6 +14,7 @@ class AIEvolutionProp(Controller):
     def __init__(self):
         self._props = []
         self._coefs = []
+        self._deviations = []
 
         funs = [
             ('mean', lambda x: sum(x) / len(x)),
@@ -23,18 +24,19 @@ class AIEvolutionProp(Controller):
         ]
 
         for funName, fun in funs:
-            self._props.append(PropertyMyCheckersDistance(
-                fun, funName + 'Distance'))
-            self._coefs.append(random.gauss(0, 1))
-            self._props.append(
+            self._appendProperty(
+                PropertyMyCheckersDistance(fun, funName + 'Distance'))
+            self._appendProperty(
                 PropertyMyCheckersRadius(fun, funName + 'Radius'))
-            self._coefs.append(random.gauss(0, 1))
-            self._props.append(PropertyMyCheckersCloseness(
+            self._appendProperty(PropertyMyCheckersCloseness(
                 fun, funName + 'Closeness'))
-            self._coefs.append(random.gauss(0, 1))
 
         # TODO: more properties
-        # TODO: add standard deviations vector
+
+    def _appendProperty(self, property):
+        self._props.append(property)
+        self._coefs.append(random.gauss(0, 1))
+        self._deviations.append(1.0)
 
     def _calcScore(self, game):
         '''
@@ -47,10 +49,13 @@ class AIEvolutionProp(Controller):
             print('------------------------------------------------')
             game.printBoard(False)
             print('my color: ', 'B' if not game.currentPlayer else 'B')
-            for prop, co in zip(self._props, self._coefs):
+            for prop, co, devi in zip(self._props, self._coefs, self._deviations):
                 print('prop name:', prop.name)
                 print('prop value:', prop.evaluate(game))
                 print('prop coef:', co)
+                print('prop deviation:', devi)
+                print()
+
             input()
 
         ret = 0
@@ -63,6 +68,7 @@ class AIEvolutionProp(Controller):
         newone = type(self)()
         newone._coefs = self._coefs.copy()
         newone._props = [p.copy() for p in self._props]
+        newone._deviations = self._deviations.copy()
         return newone
 
     def decideNextMove(self, board, possibleMoves):
@@ -79,11 +85,31 @@ class AIEvolutionProp(Controller):
         return ret
 
     def mutate(self):
-        self._coefs = [c + random.gauss(0, 1) for c in self._coefs]
+        #self._coefs = [c + random.gauss(0, 1) for c in self._coefs]
+        def mutateDeviations():
+            assert len(self._deviations) == len(self._coefs)
+            n = len(self._deviations)
+            ksi = random.gauss(0, 1)
+            tau = 1 / sqrt(2 * n)
+            tauLocal = 1 / sqrt(2 * sqrt(n))
+            newDeviations = []
+            for sigma in self._deviations:
+                ksiLocal = random.gauss(0, 1)
+                sigma = sigma * exp(tau * ksi + tauLocal * ksiLocal)
+                newDeviations.append(sigma)
+            self._deviations = newDeviations
+
+        def mutateCoefs():
+            self._coefs = [
+                x + random.gauss(0, 1) * d for x, d in zip(self._coefs, self._deviations)]
+
+        mutateDeviations()
+        mutateCoefs()
 
     def serialize(self, filename):
-        pickle.dump(self._coefs, open(filename, 'wb'))
+        pickle.dump((self._coefs, self._deviations), open(filename, 'wb'))
 
     def deserialize(self, filename):
-        self._coefs = pickle.load(open(filename, 'rb'))
+        self._coefs, self._deviations = pickle.load(open(filename, 'rb'))
         assert len(self._coefs) == len(self._props)
+        assert len(self._coefs) == len(self._deviations)
