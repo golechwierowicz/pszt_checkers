@@ -290,9 +290,9 @@ class Game:
         assert nextMove in possibleMoves
         self.applyMove(nextMove)
         self.roundCounter += 1
-        if self.roundCounter == 5000:
+        if self.roundCounter == 500:
             print("Detected infinite game!")
-            self.printBoard()
+            self.printBoard(False)
             self.infiniteGame = True
 
     def finished(self):

@@ -17,6 +17,9 @@ def parseArguments():
                         dest='inputFile1', default=None)
     parser.add_argument('-i2', '--input2', help='Input AI data for aiType2',
                         dest='inputFile2', default=None)
+    parser.add_argument('-r', '--reversed',
+                        help='ai of type2 starts firsts',
+                        dest='reversed', action='store_true', default=False)
     return parser.parse_args()
 
 
@@ -46,9 +49,15 @@ if __name__ == '__main__':
     args = parseArguments()
 
     print('starting duel:')
-    ai1 = initAI(args.aiType1, args.inputFile1)
-    print('vs')
-    ai2 = initAI(args.aiType2, args.inputFile2)
+
+    if args.reversed:
+        ai1 = initAI(args.aiType2, args.inputFile2)
+        print('vs')
+        ai2 = initAI(args.aiType1, args.inputFile1)
+    else:
+        ai1 = initAI(args.aiType1, args.inputFile1)
+        print('vs')
+        ai2 = initAI(args.aiType2, args.inputFile2)
 
     input('Press return to start duel ...')
     w = playGame(ai1, ai2)

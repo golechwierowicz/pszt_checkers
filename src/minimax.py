@@ -1,5 +1,6 @@
 from controller import Controller
 from rules import Game
+import random
 
 
 class MiniMax(Controller):
@@ -10,6 +11,7 @@ class MiniMax(Controller):
 
     def decideNextMove(self, board, possibleMoves):
         assert len(possibleMoves) > 0
+        random.shuffle(possibleMoves)
         self.player = board.currentPlayer
         # get best move, other elem of tuple is score
         best_move = self.maxi(board, self.depth)[1]
