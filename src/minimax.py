@@ -11,6 +11,8 @@ class MiniMax(Controller):
 
     def decideNextMove(self, board, possibleMoves):
         assert len(possibleMoves) > 0
+        if len(possibleMoves) == 1:
+            return possibleMoves[0]
         self.player = board.currentPlayer
         # get best move, other elem of tuple is score
         best_move = self.maxi(board, self.depth)[1]
@@ -20,32 +22,45 @@ class MiniMax(Controller):
         self.player = board.currentPlayer
         return self.maxi(board, self.depth)[0]
 
-    def mini(self, board, depth):
+    def mini(self, board, depth, alpha=-float('inf'), beta=float('inf')):
         if(depth <= 0):
             return (self.evaluate(board), None)
         mini_moves = board.getPossibleMoves()
         random.shuffle(mini_moves)
-        best_score = float('inf')
+        best_score = None
         best_move = None
         for mm in mini_moves:
-            curr = self.maxi(board.getAppliedBoard(mm), depth - 1)[0]
-            if(curr <= best_score):
+            curr = self.maxi(board.getAppliedBoard(mm),
+                             depth - 1, alpha, beta)[0]
+            if best_score is None or (curr < best_score):
                 best_score = curr
                 best_move = mm
+            beta = min(beta, curr)
+            if alpha >= beta:
+                break
+        if best_score is None:
+            best_score = float('inf')
+        assert best_move in mini_moves or len(mini_moves) == 0
         return (best_score, best_move)
 
-    def maxi(self, board, depth):
+    def maxi(self, board, depth, alpha=-float('inf'), beta=float('inf')):
         if(depth <= 0):
             return (self.evaluate(board), None)
         maxi_moves = board.getPossibleMoves()
         random.shuffle(maxi_moves)
-        best_score = -1 * float('inf')
+        best_score = None
         best_move = None
         for mm in maxi_moves:
-            curr = self.mini(board.getAppliedBoard(mm), depth - 1)[0]
-            if(curr >= best_score):
+            curr = self.mini(board.getAppliedBoard(mm),
+                             depth - 1, alpha, beta)[0]
+            if best_score is None or (curr > best_score):
                 best_score = curr
                 best_move = mm
+            alpha = max(alpha, curr)
+            if alpha >= beta:
+                break
+        if best_score is None:
+            best_score = -float('inf')
         assert best_move in maxi_moves or len(maxi_moves) == 0
         return (best_score, best_move)
 

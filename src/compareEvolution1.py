@@ -30,7 +30,7 @@ if __name__ == '__main__':
 
     print("Comparing:")
     print('Given AI:')
-    ai1 = initAI(args.aiType, args.inputFile, mustLoad=True)
+    ai1 = initAI(args.aiType, args.inputFile, mustLoad=False)
     print('Opponent:')
     ai2 = initAI(args.opponent)
 
