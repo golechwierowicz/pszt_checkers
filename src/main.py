@@ -52,6 +52,7 @@ def playGame(ai1, ai2):
 
 if __name__ == '__main__':
     args = parseArguments()
+    draw = 2
 
     print('starting duel:')
 
@@ -70,7 +71,7 @@ if __name__ == '__main__':
     w = playGame(ai1, ai2)
 
     print('Game result')
-    if w == 2:
+    if w == draw:
         print('Draw')
     else:
         print("winner is:", getAIName(ai2) if w else getAIName(ai1))
