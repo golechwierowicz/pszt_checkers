@@ -5,6 +5,7 @@ import argparse
 
 from aiInfo import initAI, getAIName
 
+display = False
 
 def parseArguments():
     parser = argparse.ArgumentParser(
@@ -20,14 +21,18 @@ def parseArguments():
     parser.add_argument('-r', '--reversed',
                         help='ai of type2 starts firsts',
                         dest='reversed', action='store_true', default=False)
+    parser.add_argument('-d', '--display',
+                        help='Show game in separate gui window ',
+                        dest='display', action='store_true', default=False)
     return parser.parse_args()
 
 
 def playGame(ai1, ai2):
     q = Queue()
-    # from display import DisplayHelper
-    # window = DisplayHelper(q)
-    # window.run()
+    if display:
+        from display import DisplayHelper
+        window = DisplayHelper(q)
+        window.run()
 
     g = Game(ai1, ai2)
 
@@ -58,6 +63,8 @@ if __name__ == '__main__':
         ai1 = initAI(args.aiType1, args.inputFile1)
         print('vs')
         ai2 = initAI(args.aiType2, args.inputFile2)
+
+    display = args.display
 
     input('Press return to start duel ...')
     w = playGame(ai1, ai2)
