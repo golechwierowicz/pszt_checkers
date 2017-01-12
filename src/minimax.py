@@ -11,7 +11,6 @@ class MiniMax(Controller):
 
     def decideNextMove(self, board, possibleMoves):
         assert len(possibleMoves) > 0
-        random.shuffle(possibleMoves)
         self.player = board.currentPlayer
         # get best move, other elem of tuple is score
         best_move = self.maxi(board, self.depth)[1]
@@ -25,6 +24,7 @@ class MiniMax(Controller):
         if(depth <= 0):
             return (self.evaluate(board), None)
         mini_moves = board.getPossibleMoves()
+        random.shuffle(mini_moves)
         best_score = float('inf')
         best_move = None
         for mm in mini_moves:
@@ -38,6 +38,7 @@ class MiniMax(Controller):
         if(depth <= 0):
             return (self.evaluate(board), None)
         maxi_moves = board.getPossibleMoves()
+        random.shuffle(maxi_moves)
         best_score = -1 * float('inf')
         best_move = None
         for mm in maxi_moves:
